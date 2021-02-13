@@ -30,7 +30,17 @@ extern "C" {
  * and freeciv-specific processing occurs if it is NULL:
  * a log message, possibly cleanup, and ending with exit(EXIT_FAILURE)
  */
-   
+
+#ifdef NANOCIV
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
+#define fc_malloc malloc
+#define fc_realloc realloc
+#define fc_calloc calloc
+#define FC_FREE(ptr)       do { free(ptr); (ptr) = NULL; } while(0)
+#define fc_strdup strdup
+#else // NANOCIV   
 #define fc_malloc(sz)      fc_real_malloc((sz), "malloc", \
 					  __FC_LINE__, __FILE__)
 #define fc_realloc(ptr,sz) fc_real_realloc((ptr), (sz), "realloc", \
@@ -41,6 +51,7 @@ extern "C" {
 #define FC_FREE(ptr)       do { free(ptr); (ptr) = NULL; } while(0)
 
 #define fc_strdup(str) real_fc_strdup((str), "strdup", __FC_LINE__, __FILE__)
+#endif // NANOCIV
 
 /***********************************************************************/
 

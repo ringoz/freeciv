@@ -166,7 +166,7 @@ extern "C" {
 #include "specenum_gen.h"
 /* the maximum number of enumerators is set in generate_specenum.py */
 
-extern enum event_type sorted_events[]; /* [E_COUNT], sorted by the
+NANOCIV_TLS extern enum event_type sorted_events[]; /* [E_COUNT], sorted by the
                                            translated message text */
 
 const char *get_event_message_text(enum event_type event);

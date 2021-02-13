@@ -47,7 +47,7 @@ struct player_slot {
   struct player *player;
 };
 
-static struct {
+NANOCIV_TLS static struct {
   struct player_slot *slots;
   int used_slots; /* number of used/allocated players in the player slots */
 } player_slots;

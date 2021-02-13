@@ -3459,7 +3459,7 @@ bool entry_str_set_gt_marking(struct entry *pentry, bool gt_marking)
 **************************************************************************/
 static void entry_to_file(const struct entry *pentry, fz_FILE *fs)
 {
-  static char buf[8192];
+  char buf[8192];
   char *dot = NULL;
   int i;
 

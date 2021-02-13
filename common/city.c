@@ -56,14 +56,14 @@ static void citylog_map_radius_sq(enum log_level level);
 #endif
 
 /* Get city tile informations using the city tile index. */
-static struct iter_index *city_map_index = NULL;
+NANOCIV_TLS static struct iter_index *city_map_index = NULL;
 /* Get city tile informations using the city tile coordinates. This is an
  * [x][y] array of integer values corresponding to city_map_index. The
  * coordinates x and y are in the range [0, CITY_MAP_MAX_SIZE] */
-static int city_map_xy[CITY_MAP_MAX_SIZE][CITY_MAP_MAX_SIZE];
+NANOCIV_TLS static int city_map_xy[CITY_MAP_MAX_SIZE][CITY_MAP_MAX_SIZE];
 
 /* number of tiles of a city; depends on the squared city radius */
-static int city_map_numtiles[CITY_MAP_MAX_RADIUS_SQ + 1];
+NANOCIV_TLS static int city_map_numtiles[CITY_MAP_MAX_RADIUS_SQ + 1];
 
 /* definitions and functions for the tile_cache */
 struct tile_cache {
@@ -75,7 +75,7 @@ static inline int city_tile_cache_get_output(const struct city *pcity,
                                              int city_tile_index,
                                              enum output_type_id o);
 
-struct citystyle *city_styles = NULL;
+NANOCIV_TLS struct citystyle *city_styles = NULL;
 
 /* One day these values may be read in from the ruleset.  In the meantime
  * they're just an easy way to access information about each output type. */

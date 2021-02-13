@@ -286,6 +286,10 @@ void set_hover_state(struct unit_list *punits, enum cursor_hover_state state,
     connect_tgt = NULL;
   }
   goto_last_order = order;
+#ifdef NANOCIV
+  extern void hover_state_changed();
+  hover_state_changed();
+#endif
 }
 
 /**************************************************************************
@@ -387,14 +391,17 @@ static struct tile *find_a_focus_unit_tile_to_center_on(void)
 /**************************************************************************
 Center on the focus unit, if off-screen and auto_center_on_unit is true.
 **************************************************************************/
-void auto_center_on_focus_unit(void)
+bool auto_center_on_focus_unit(void)
 {
   struct tile *ptile = find_a_focus_unit_tile_to_center_on();
 
   if (ptile && gui_options.auto_center_on_unit &&
       !tile_visible_and_not_on_border_mapcanvas(ptile)) {
     center_tile_mapcanvas(ptile);
+    return TRUE;
   }
+
+  return FALSE;
 }
 
 /**************************************************************************
@@ -842,7 +849,15 @@ double blink_active_unit(void)
       blink_timer = timer_renew(blink_timer, TIMER_USER, TIMER_ACTIVE);
       timer_start(blink_timer);
 
+#ifdef NANOCIV
+      struct tile *last_tile = NULL;
+#endif
       unit_list_iterate(get_units_in_focus(), punit) {
+#ifdef NANOCIV
+      if (last_tile == unit_tile(punit))
+        continue;
+      last_tile = unit_tile(punit);
+#endif
 	/* We flush to screen directly here.  This is most likely faster
 	 * since these drawing operations are all small but may be spread
 	 * out widely. */

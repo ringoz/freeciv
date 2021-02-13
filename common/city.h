@@ -459,7 +459,7 @@ struct citystyle {
   struct requirement_vector reqs;
 };
 
-extern struct citystyle *city_styles;
+NANOCIV_TLS extern struct citystyle *city_styles;
 extern const Output_type_id num_output_types;
 extern struct output_type output_types[];
 

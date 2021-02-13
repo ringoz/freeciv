@@ -55,9 +55,9 @@ struct advance_root_req_iter {
  * server/ruleset.c (for the server)
  * client/packhand.c (for the client)
  */
-struct advance advances[A_ARRAY_SIZE];
+NANOCIV_TLS struct advance advances[A_ARRAY_SIZE];
 
-static struct user_flag user_tech_flags[MAX_NUM_USER_TECH_FLAGS];
+NANOCIV_TLS static struct user_flag user_tech_flags[MAX_NUM_USER_TECH_FLAGS];
 
 /**************************************************************************
   Return the last item of advances/technologies.

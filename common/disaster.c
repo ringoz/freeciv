@@ -25,7 +25,7 @@
 
 #include "disaster.h"
 
-static struct disaster_type disaster_types[MAX_DISASTER_TYPES];
+NANOCIV_TLS static struct disaster_type disaster_types[MAX_DISASTER_TYPES];
 
 /****************************************************************************
   Initialize disaster_type structures.

@@ -39,7 +39,7 @@
 #include "effects.h"
 
 
-static bool initialized = FALSE;
+NANOCIV_TLS static bool initialized = FALSE;
 
 /**************************************************************************
   The code creates a ruleset cache on ruleset load. This constant cache
@@ -103,7 +103,7 @@ static bool initialized = FALSE;
   Ruleset cache. The cache is created during ruleset loading and the data
   is organized to enable fast queries.
 **************************************************************************/
-static struct {
+NANOCIV_TLS static struct {
   /* A single list containing every effect. */
   struct effect_list *tracker;
 

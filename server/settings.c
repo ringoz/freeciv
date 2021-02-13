@@ -1264,6 +1264,11 @@ static bool plrcol_validate(int value, struct connection *caller,
       .bitwise = { (unsigned *) (void *) &value, _default, func_validate,   \
        func_name, 0 } INIT_BRACE_END, func_action, FALSE},
 
+#ifdef NANOCIV
+static struct civ_game zerogame;
+#define game zerogame
+#endif
+
 /* game settings */
 static struct setting settings[] = {
 
@@ -2774,6 +2779,10 @@ static struct setting settings[] = {
              "affect users kicked in the past."), NULL, NULL, NULL,
           GAME_MIN_KICK_TIME, GAME_MAX_KICK_TIME, GAME_DEFAULT_KICK_TIME)
 };
+
+#ifdef NANOCIV
+#undef game
+#endif
 
 #undef GEN_BOOL
 #undef GEN_INT
@@ -4510,6 +4519,12 @@ bool settings_game_reset(void)
 **************************************************************************/
 void settings_init(bool act)
 {
+#ifdef NANOCIV
+  const intptr_t gamedelta = (intptr_t)&game - (intptr_t)&zerogame;
+  for (int i = 0; i != SETTINGS_NUM; ++i)
+    *(char **)&settings[i].string.value = (char *)((intptr_t)settings[i].string.value + gamedelta);
+#endif
+  
   settings_list_init();
 
   settings_iterate(SSET_ALL, pset) {
@@ -4556,6 +4571,12 @@ void settings_free(void)
   } settings_iterate_end;
 
   settings_list_free();
+
+#ifdef NANOCIV
+  const intptr_t gamedelta = (intptr_t)&game - (intptr_t)&zerogame;
+  for (int i = 0; i != SETTINGS_NUM; ++i)
+    *(char **)&settings[i].string.value = (char *)((intptr_t)settings[i].string.value - gamedelta);
+#endif
 }
 
 /****************************************************************************

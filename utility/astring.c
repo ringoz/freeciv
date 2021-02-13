@@ -77,8 +77,8 @@
 #define n_alloc _private_n_alloc_
 
 static const struct astring zero_astr = ASTRING_INIT;
-static char *astr_buffer = NULL;
-static size_t astr_buffer_alloc = 0;
+NANOCIV_TLS static char *astr_buffer = NULL;
+NANOCIV_TLS static size_t astr_buffer_alloc = 0;
 
 static inline char *astr_buffer_get(size_t *alloc);
 static inline char *astr_buffer_grow(size_t *alloc);

@@ -738,7 +738,7 @@ bool unit_could_load_at(const struct unit *punit, const struct tile *ptile)
   return FALSE;
 }
 
-static int move_points_denomlen = 0;
+NANOCIV_TLS static int move_points_denomlen = 0;
 
 /****************************************************************************
   Call whenever terrain_control.move_fragments / SINGLE_MOVE changes.

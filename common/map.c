@@ -65,7 +65,7 @@ struct startpos_iter {
 
 
 /* these are initialized from the terrain ruleset */
-struct terrain_misc terrain_control;
+NANOCIV_TLS struct terrain_misc terrain_control;
 
 /* used to compute neighboring tiles.
  *
@@ -85,8 +85,8 @@ struct terrain_misc terrain_control;
 const int DIR_DX[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 const int DIR_DY[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
-static bool dir_cardinality[9]; /* Including invalid one */
-static bool dir_validity[9];    /* Including invalid one */
+NANOCIV_TLS static bool dir_cardinality[9]; /* Including invalid one */
+NANOCIV_TLS static bool dir_validity[9];    /* Including invalid one */
 
 static bool is_valid_dir_calculate(enum direction8 dir);
 static bool is_cardinal_dir_calculate(enum direction8 dir);

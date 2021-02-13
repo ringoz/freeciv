@@ -26,9 +26,9 @@
 
 #include "style.h"
 
-static struct nation_style *styles = NULL;
+NANOCIV_TLS static struct nation_style *styles = NULL;
 
-static struct music_style *music_styles = NULL;
+NANOCIV_TLS static struct music_style *music_styles = NULL;
 
 /****************************************************************************
   Initialise styles structures.

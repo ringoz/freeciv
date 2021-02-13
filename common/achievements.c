@@ -32,7 +32,7 @@
 
 #include "achievements.h"
 
-static struct achievement achievements[MAX_ACHIEVEMENT_TYPES];
+NANOCIV_TLS static struct achievement achievements[MAX_ACHIEVEMENT_TYPES];
 
 /****************************************************************
   Initialize achievements.

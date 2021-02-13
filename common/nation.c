@@ -42,12 +42,12 @@ struct nation_set {
   char description[MAX_LEN_MSG];
 };
 
-static struct nation_type *nations = NULL;
+NANOCIV_TLS static struct nation_type *nations = NULL;
 
-static int num_nation_sets;
-static struct nation_set nation_sets[MAX_NUM_NATION_SETS];
-static int num_nation_groups;
-static struct nation_group nation_groups[MAX_NUM_NATION_GROUPS];
+NANOCIV_TLS static int num_nation_sets;
+NANOCIV_TLS static struct nation_set nation_sets[MAX_NUM_NATION_SETS];
+NANOCIV_TLS static int num_nation_groups;
+NANOCIV_TLS static struct nation_group nation_groups[MAX_NUM_NATION_GROUPS];
 
 /****************************************************************************
   Runs action if the nation is not valid.

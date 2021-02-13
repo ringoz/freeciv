@@ -27,10 +27,10 @@
 
 #include "extras.h"
 
-static struct extra_type extras[MAX_EXTRA_TYPES];
+NANOCIV_TLS static struct extra_type extras[MAX_EXTRA_TYPES];
 
-static struct extra_type_list *caused_by[EC_LAST];
-static struct extra_type_list *removed_by[ERM_COUNT];
+NANOCIV_TLS static struct extra_type_list *caused_by[EC_LAST];
+NANOCIV_TLS static struct extra_type_list *removed_by[ERM_COUNT];
 
 /****************************************************************************
   Initialize extras structures.

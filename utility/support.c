@@ -437,6 +437,9 @@ DIR *fc_opendir(const char *dir_to_open)
 *****************************************************************/
 int fc_remove(const char *filename)
 {
+#ifdef NANOCIV
+  return osRemove(filename);
+#endif
 #ifdef WIN32_NATIVE
 	int result;
 	char *filename_in_local_encoding =
@@ -455,6 +458,24 @@ int fc_remove(const char *filename)
 *****************************************************************/
 int fc_stat(const char *filename, struct stat *buf)
 {
+#ifdef NANOCIV
+  OSStat bufos;
+  int res = osStat(filename, &bufos);
+  if (!res && buf)
+  {
+    buf->st_mode  = bufos.st_mode;
+    buf->st_size  = bufos.st_size;
+#pragma push_macro("st_mtime")
+#undef st_mtime
+    time_t mtime = bufos.st_mtime;
+#pragma pop_macro("st_mtime")
+    buf->st_mtime = mtime;
+  }
+  else
+  if (res)
+    errno = ENOENT;
+  return res;
+#endif
 #ifdef WIN32_NATIVE
 	int result;
 	char *filename_in_local_encoding =
@@ -514,6 +535,9 @@ const char *fc_strerror(fc_errno err)
 #endif /* WIN32_NATIVE */
 }
 
+#ifdef NANOCIV
+#include <OS/thread.h>
+#endif
 
 /***************************************************************
   Suspend execution for the specified number of microseconds.
@@ -549,6 +573,9 @@ void fc_usleep(unsigned long usec)
 #ifdef WIN32_NATIVE
   Sleep(usec / 1000);
 #else  /* WIN32_NATIVE */
+#ifdef NANOCIV
+  osThreadSleep(usec * 1000ll);
+#else  /* NANOCIV */
   fc_timeval tv;
 
   tv.tv_sec = 0;
@@ -556,6 +583,7 @@ void fc_usleep(unsigned long usec)
   /* FIXME: an interrupt can cause an EINTR return here.  In that case we
    * need to have another select call. */
   fc_select(0, NULL, NULL, NULL, &tv);
+#endif /* NANOCIV */
 #endif /* WIN32_NATIVE */
 #endif /* GENERATING_MAC */
 #endif /* HAVE_SNOOZE */
@@ -932,6 +960,9 @@ static DWORD WINAPI thread_proc(LPVOID arg)
 ***********************************************************************/
 void fc_init_console(void)
 {
+#ifdef NANOCIV
+  return;
+#endif
 #ifdef WIN32_NATIVE
   DWORD threadid;
 
@@ -962,6 +993,9 @@ void fc_init_console(void)
 ***********************************************************************/
 char *fc_read_console(void)
 {
+#ifdef NANOCIV
+  return NULL;
+#endif
 #ifdef WIN32_NATIVE
   if (WaitForSingleObject(console_thread, 0) == WAIT_OBJECT_0) {
     CloseHandle(console_thread);

@@ -126,11 +126,13 @@ void init_character_encodings(const char *my_internal_encoding,
 
 #else  /* HAVE_ICONV */
    /* log_* may not work at this point. */
+#ifndef NANOCIV   
   fprintf(stderr,
           _("You are running Freeciv without using iconv. Unless\n"
             "you are using the UTF-8 character set, some characters\n"
             "may not be displayed properly. You can download iconv\n"
             "at http://gnu.org/.\n"));
+#endif /* NANOCIV */
 #endif /* HAVE_ICONV */
 
   is_init = TRUE;
@@ -372,6 +374,7 @@ void fc_fprintf(FILE *stream, const char *format, ...)
   instance the demographics code uses it, but this should instead pass the
   data directly to the GUI library for formatting.
 ****************************************************************************/
+#ifdef HAVE_ICONV // $ringo: reports need this to work properly
 size_t get_internal_string_length(const char *text)
 {
   int text2[(strlen(text) + 1)]; /* UCS-4 text */
@@ -390,3 +393,4 @@ size_t get_internal_string_length(const char *text)
     }
   }
 }
+#endif

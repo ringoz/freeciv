@@ -40,8 +40,8 @@ struct specialist {
 
 #define DEFAULT_SPECIALIST default_specialist
 
-extern struct specialist specialists[SP_MAX];
-extern int default_specialist;
+NANOCIV_TLS extern struct specialist specialists[SP_MAX];
+NANOCIV_TLS extern int default_specialist;
 
 /* General specialist accessor functions. */
 Specialist_type_id specialist_count(void);

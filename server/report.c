@@ -63,7 +63,7 @@ struct logging_civ_score {
 
 /* Have to be initialized to value less than -1 so it doesn't seem like report was created at
  * the end of previous turn in the beginning to turn 0. */
-struct history_report latest_history_report = { -2 };
+NANOCIV_TLS struct history_report latest_history_report = { -2 };
 
 static struct logging_civ_score *score_log = NULL;
 

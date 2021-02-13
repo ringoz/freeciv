@@ -72,7 +72,7 @@ static const char *event_sections[] = {
  * to be sorted.
  * Every E_* event defined in common/events.h should have an entry here.
  */
-static struct {
+NANOCIV_TLS static struct {
   const char *enum_name;
   char *tag_name;
   enum event_section_n esn;
@@ -215,9 +215,9 @@ static struct {
  * Maps from enum event_type to indexes of events[]. Set by
  * events_init. 
  */
-static int event_to_index[E_COUNT];
+NANOCIV_TLS static int event_to_index[E_COUNT];
 
-enum event_type sorted_events[E_COUNT];
+NANOCIV_TLS enum event_type sorted_events[E_COUNT];
 
 
 /**************************************************************************

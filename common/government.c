@@ -30,7 +30,7 @@
 
 #include "government.h"
 
-struct government *governments = NULL;
+NANOCIV_TLS struct government *governments = NULL;
 
 /****************************************************************************
   Returns the government that has the given (translated) name.

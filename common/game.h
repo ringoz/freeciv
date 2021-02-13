@@ -317,7 +317,7 @@ void user_flag_free(struct user_flag *flag);
 
 int current_turn_timeout(void);
 
-extern struct civ_game game;
+extern NANOCIV_TLS struct civ_game game;
 
 #define GAME_DEFAULT_SEED        0
 #define GAME_MIN_SEED            0

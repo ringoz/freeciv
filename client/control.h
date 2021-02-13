@@ -176,7 +176,7 @@ void unit_focus_urgent(struct unit *punit);
 void unit_focus_advance(void);
 void unit_focus_update(void);
 
-void auto_center_on_focus_unit(void);
+bool auto_center_on_focus_unit(void);
 void update_unit_pix_label(struct unit_list *punitlist);
 
 struct unit *find_visible_unit(struct tile *ptile);

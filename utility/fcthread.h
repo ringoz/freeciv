@@ -40,6 +40,12 @@ extern "C" {
 #define fc_mutex       pthread_mutex_t
 #define fc_thread_cond pthread_cond_t
 
+#elif defined (NANOCIV)
+
+#define fc_thread      void *
+#define fc_mutex       void *
+#define fc_thread_cond void *
+
 #elif defined (FREECIV_HAVE_WINTHREADS)
 
 #include <windows.h>

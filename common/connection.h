@@ -31,7 +31,9 @@ extern "C" {
 #endif  /* FREECIV_JSON_CONNECTION */
 
 #ifndef FREECIV_JSON_CONNECTION
+#ifndef NANOCIV
 #define USE_COMPRESSION
+#endif  /* NANOCIV */
 #endif  /* FREECIV_JSON_CONNECTION */
 
 /**************************************************************************

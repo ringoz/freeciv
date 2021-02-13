@@ -220,10 +220,12 @@ void srv_init(void)
 {
   i_am_server(); /* Tell to libfreeciv that we are server */
 
+#ifndef NANOCIV
   /* NLS init */
   init_nls();
 #ifdef ENABLE_NLS
   (void) bindtextdomain("freeciv-nations", get_locale_dir());
+#endif
 #endif
 
   /* This is before ai module initializations so that if ai module
@@ -272,10 +274,12 @@ void srv_init(void)
   /* mark as initialized */
   has_been_srv_init = TRUE;
 
+#ifndef NANOCIV
   /* init character encodings. */
   init_character_encodings(FC_DEFAULT_DATA_ENCODING, FALSE);
 #ifdef ENABLE_NLS
   bind_textdomain_codeset("freeciv-nations", get_internal_encoding());
+#endif
 #endif
 
   /* Initialize callbacks. */
@@ -1689,6 +1693,17 @@ void save_game_auto(const char *save_reason, enum autosave_type type)
     fc_snprintf(filename, sizeof(filename), "%s-timer", game.server.save_name);
   }
   save_game(filename, save_reason, FALSE);
+
+#ifdef NANOCIV
+  int maxfiles = 5;
+  struct fileinfo_list *files = fileinfolist_infix(get_save_dirs(), ".sav.gz", FALSE);
+  fileinfo_list_iterate(files, pfile)
+  {
+    if (--maxfiles < 0)
+      fc_remove(pfile->fullname);
+  } fileinfo_list_iterate_end;
+  fileinfo_list_destroy(files);
+#endif
 }
 
 /**************************************************************************
@@ -1789,8 +1804,10 @@ void server_quit(void)
   timing_log_free();
   registry_module_close();
   fc_destroy_mutex(&game.server.mutexes.city_list);
+#ifndef NANOCIV
   free_libfreeciv();
   free_nls();
+#endif
   con_log_close();
   cmdline_option_values_free();
   exit(EXIT_SUCCESS);

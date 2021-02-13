@@ -127,7 +127,7 @@ int fc_stricoll(const char *str0, const char *str1);
 
 FILE *fc_fopen(const char *filename, const char *opentype);
 #ifdef FREECIV_HAVE_LIBZ
-#include <zlib.h>
+typedef struct OSFile *gzFile;
 gzFile fc_gzopen(const char *filename, const char *opentype);
 #endif
 DIR *fc_opendir(const char *dir_to_open);

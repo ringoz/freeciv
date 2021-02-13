@@ -42,7 +42,7 @@ struct team {
   struct team_slot *slot;
 };
 
-static struct {
+NANOCIV_TLS static struct {
   struct team_slot *slots;
   int used_slots;
 } team_slots;

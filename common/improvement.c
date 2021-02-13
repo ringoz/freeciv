@@ -38,7 +38,7 @@ The improvement_types array is now setup in:
    server/ruleset.c (for the server)
    client/packhand.c (for the client)
 **************************************************************************/
-static struct impr_type improvement_types[B_LAST];
+NANOCIV_TLS static struct impr_type improvement_types[B_LAST];
 
 /****************************************************************************
   Initialize building structures.

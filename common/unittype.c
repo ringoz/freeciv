@@ -41,14 +41,14 @@
 
 #define MAX_UNIT_ROLES L_LAST + ACTION_COUNT
 
-static struct unit_type unit_types[U_LAST];
-static struct unit_class unit_classes[UCL_LAST];
+NANOCIV_TLS static struct unit_type unit_types[U_LAST];
+NANOCIV_TLS static struct unit_class unit_classes[UCL_LAST];
 /* the unit_types and unit_classes arrays are now setup in:
    server/ruleset.c (for the server)
    client/packhand.c (for the client)
 */
 
-static struct user_flag user_type_flags[MAX_NUM_USER_UNIT_FLAGS];
+NANOCIV_TLS static struct user_flag user_type_flags[MAX_NUM_USER_UNIT_FLAGS];
 
 /**************************************************************************
   Return the first item of unit_types.
@@ -255,7 +255,7 @@ bool utype_can_freely_unload(const struct unit_type *pcargotype,
  * actions units of each type can perform. Checking if any action can be
  * done at all is done via the fake action id ACTION_ANY. If any hostile
  * action can be performed is done via ACTION_HOSTILE. */
-static bv_unit_types unit_can_act_cache[ACTION_AND_FAKES];
+NANOCIV_TLS static bv_unit_types unit_can_act_cache[ACTION_AND_FAKES];
 
 /**************************************************************************
   Cache what generalized (ruleset defined) action enabler controlled
@@ -341,8 +341,8 @@ BV_DEFINE(bv_ustate_act_cache, USP_COUNT * 2);
   requirement_kind_ereq(_id_, REQ_RANGE_LOCAL, _present_, USP_COUNT)
 
 /* Caches for each unit type */
-static bv_ustate_act_cache ustate_act_cache[U_LAST][ACTION_AND_FAKES];
-static bv_diplrel_all_reqs dipl_rel_action_cache[U_LAST][ACTION_AND_FAKES];
+NANOCIV_TLS static bv_ustate_act_cache ustate_act_cache[U_LAST][ACTION_AND_FAKES];
+NANOCIV_TLS static bv_diplrel_all_reqs dipl_rel_action_cache[U_LAST][ACTION_AND_FAKES];
 
 /**************************************************************************
   Cache if any action may be possible for a unit of the type putype for
@@ -1189,9 +1189,9 @@ For these functions flags and roles are considered to be in the same "space",
 and any "role" argument can also be a "flag".
 Unit order is in terms of the order in the units ruleset.
 **************************************************************************/
-static bool first_init = TRUE;
-static int n_with_role[MAX_UNIT_ROLES];
-static struct unit_type **with_role[MAX_UNIT_ROLES];
+NANOCIV_TLS static bool first_init = TRUE;
+NANOCIV_TLS static int n_with_role[MAX_UNIT_ROLES];
+NANOCIV_TLS static struct unit_type **with_role[MAX_UNIT_ROLES];
 
 /**************************************************************************
 Do the real work for role_unit_precalcs, for one role (or flag), given by i.

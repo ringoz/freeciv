@@ -27,8 +27,8 @@
 
 #include "specialist.h"
 
-struct specialist specialists[SP_MAX];
-int default_specialist;
+NANOCIV_TLS struct specialist specialists[SP_MAX];
+NANOCIV_TLS int default_specialist;
 
 /****************************************************************************
   Initialize data for specialists.

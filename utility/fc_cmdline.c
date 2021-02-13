@@ -36,7 +36,7 @@
     TYPED_LIST_ITERATE(char *, vallist, pvalue)
 #define cmdline_value_list_iterate_end LIST_ITERATE_END
 
-static struct cmdline_value_list *cmdline_values = NULL;
+NANOCIV_TLS static struct cmdline_value_list *cmdline_values = NULL;
 
 /**************************************************************************
   Return a char* to the parameter of the option or NULL.

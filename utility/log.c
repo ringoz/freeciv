@@ -37,12 +37,12 @@ static void log_write(FILE *fs, enum log_level level, bool print_from_where,
 static void log_real(enum log_level level, bool print_from_where,
                      const char *where, const char *msg);
 
-static char *log_filename = NULL;
-static log_pre_callback_fn log_pre_callback = log_real;
-static log_callback_fn log_callback = NULL;
-static log_prefix_fn log_prefix = NULL;
+NANOCIV_TLS static char *log_filename = NULL;
+NANOCIV_TLS static log_pre_callback_fn log_pre_callback = log_real;
+NANOCIV_TLS static log_callback_fn log_callback = NULL;
+NANOCIV_TLS static log_prefix_fn log_prefix = NULL;
 
-static fc_mutex logfile_mutex;
+NANOCIV_TLS static fc_mutex logfile_mutex;
 
 #ifdef DEBUG
 static const enum log_level max_level = LOG_DEBUG;
@@ -50,8 +50,8 @@ static const enum log_level max_level = LOG_DEBUG;
 static const enum log_level max_level = LOG_VERBOSE;
 #endif /* DEBUG */
 
-static enum log_level fc_log_level = LOG_NORMAL;
-static int fc_fatal_assertions = -1;
+NANOCIV_TLS static enum log_level fc_log_level = LOG_NORMAL;
+NANOCIV_TLS static int fc_fatal_assertions = -1;
 
 #ifdef DEBUG
 struct log_fileinfo {
@@ -60,8 +60,8 @@ struct log_fileinfo {
   unsigned int min;
   unsigned int max;
 };
-static int log_num_files = 0;
-static struct log_fileinfo *log_files = NULL;
+NANOCIV_TLS static int log_num_files = 0;
+NANOCIV_TLS static struct log_fileinfo *log_files = NULL;
 #endif /* DEBUG */
 
 /* A helper variable to indicate that there is no log message. The '%s' is
@@ -319,6 +319,7 @@ bool log_do_output_for_level_at_location(enum log_level level,
   Unconditionally print a simple string.
   Let the callback do its own level formatting and add a '\n' if it wants.
 *****************************************************************************/
+#include <OS/thread.h>
 static void log_write(FILE *fs, enum log_level level, bool print_from_where,
                       const char *where, const char *message)
 {
@@ -332,10 +333,14 @@ static void log_write(FILE *fs, enum log_level level, bool print_from_where,
       prefix[0] = '\0';
     }
 
+    char thrname[16];
+    if (osThreadGetName(osThreadSelf(), thrname, sizeof(thrname)))
+      thrname[0] = '\0';
+
     if (log_filename || (print_from_where && where)) {
-      fc_fprintf(fs, "%d: %s%s%s\n", level, prefix, where, message);
+      fc_fprintf(fs, "[%s/%d] %s%s%s\n", thrname, level, prefix, where, message);
     } else {
-      fc_fprintf(fs, "%d: %s%s\n", level, prefix, message);
+      fc_fprintf(fs, "[%s/%d] %s%s\n", thrname, level, prefix, message);
     }
     fflush(fs);
   }
@@ -386,12 +391,12 @@ void vdo_log(const char *file, const char *function, int line,
 static void log_real(enum log_level level, bool print_from_where,
                      const char *where, const char *msg)
 {
-  static char last_msg[MAX_LEN_LOG_LINE] = "";
-  static unsigned int repeated = 0; /* total times current message repeated */
-  static unsigned int next = 2; /* next total to print update */
-  static unsigned int prev = 0; /* total on last update */
+  NANOCIV_TLS static char last_msg[MAX_LEN_LOG_LINE] = "";
+  NANOCIV_TLS static unsigned int repeated = 0; /* total times current message repeated */
+  NANOCIV_TLS static unsigned int next = 2; /* next total to print update */
+  NANOCIV_TLS static unsigned int prev = 0; /* total on last update */
   /* only count as repeat if same level */
-  static enum log_level prev_level = -1;
+  NANOCIV_TLS static enum log_level prev_level = -1;
   char buf[MAX_LEN_LOG_LINE];
   FILE *fs;
 

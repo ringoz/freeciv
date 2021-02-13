@@ -41,7 +41,7 @@
 
 #define MAX_NUM_FRAMES 64
 
-static log_pre_callback_fn previous = NULL;
+NANOCIV_TLS static log_pre_callback_fn previous = NULL;
 
 static void write_backtrace_line(enum log_level level, bool print_from_where,
                                  const char *where, const char *msg);

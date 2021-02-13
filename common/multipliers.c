@@ -20,7 +20,7 @@
 
 #include "multipliers.h"
 
-static struct multiplier multipliers[MAX_NUM_MULTIPLIERS];
+NANOCIV_TLS static struct multiplier multipliers[MAX_NUM_MULTIPLIERS];
 
 /****************************************************************************
   Initialize all multipliers

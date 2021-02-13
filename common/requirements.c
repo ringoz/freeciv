@@ -43,7 +43,7 @@
 ************************************************************************/
 typedef enum req_item_found (*universal_found)(const struct requirement *,
                                                const struct universal *);
-static universal_found universal_found_function[VUT_COUNT] = {NULL};
+NANOCIV_TLS static universal_found universal_found_function[VUT_COUNT] = {NULL};
 
 /**************************************************************************
   Parse requirement type (kind) and value strings into a universal

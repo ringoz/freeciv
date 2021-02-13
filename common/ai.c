@@ -27,9 +27,9 @@
 #include "ai.h"
 #include "player.h"
 
-static struct ai_type ai_types[FREECIV_AI_MOD_LAST];
+NANOCIV_TLS static struct ai_type ai_types[FREECIV_AI_MOD_LAST];
 
-static int ai_type_count = 0;
+NANOCIV_TLS static int ai_type_count = 0;
 
 #ifdef DEBUG_AITIMERS
 struct ai_timer {
@@ -40,8 +40,8 @@ struct ai_timer {
 static struct ai_timer *ai_timer_get(const struct ai_type *ai);
 static struct ai_timer *ai_timer_player_get(const struct player *pplayer);
 
-static struct ai_timer *aitimers = NULL;
-static struct ai_timer *aitimer_plrs = NULL;
+NANOCIV_TLS static struct ai_timer *aitimers = NULL;
+NANOCIV_TLS static struct ai_timer *aitimer_plrs = NULL;
 
 /*****************************************************************************
   Allocate memory for Start the timer for the AI of a player.

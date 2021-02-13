@@ -1,4 +1,4 @@
-/***********************************************************************
+/********************************************************************** 
  Freeciv - Copyright (C) 1996 - A Kjeldberg, L Gregersen, P Unold
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,12 +15,6 @@
 #include <fc_config.h>
 #endif
 
-#include <curl/curl.h>
-
-#ifdef WIN32_NATIVE
-#include <windows.h>
-#endif
-
 /* utility */
 #include "fcintl.h"
 #include "ioz.h"
@@ -29,6 +23,9 @@
 #include "registry.h"
 
 #include "netfile.h"
+
+#ifndef NANOCIV
+#include <curl/curl.h>
 
 struct netfile_post {
   struct curl_httppost *first;
@@ -129,6 +126,56 @@ static bool netfile_download_file_core(const char *URL, FILE *fp,
 
   return ret;
 }
+#else /* NANOCIV */
+#include <OS/os.h>
+
+struct netfile_post {
+  char body[1024];
+};
+
+static bool netfile_download_file_core(const char *URL, FILE *fp,
+                                       struct netfile_write_cb_data *mem_data,
+                                       nf_errmsg cb, void *data)
+{
+  OSFile *http = osFopen(URL, "GET");
+
+  static const char userAgent[] = "Freeciv/" VERSION_STRING;
+  osFsetxattr(http, "User-Agent", userAgent, sizeof(userAgent) - 1);
+
+  size_t len;
+  void *buf = osFmmap(http, &len);
+  if (buf)
+  {
+    if (mem_data != NULL)
+      memcpy(mem_data->mem = fc_malloc(len), buf, mem_data->size = len);
+    else
+      osFwrite(buf, len, 1, fp);
+
+    osFmunmap(http, buf);
+  }
+  else
+  {
+    if (osFerror(http) != EIO)
+    {
+      osClearerr(http);
+
+      int status;
+      if (-1 != osFgetxattr(http, OS_XATTR_HTTP_STATUS_CODE, &status, sizeof(status)))
+        osPrintf("[%s] OS_XATTR_HTTP_STATUS_CODE: %i\n", URL, status);
+    }
+
+    if (cb != NULL)
+    {
+      char buf[2048];
+      fc_snprintf(buf, sizeof(buf), _("Failed to fetch %s"), URL);
+      cb(buf, data);
+    }
+  }
+
+  osFclose(http);
+  return buf ? TRUE : FALSE;
+}
+#endif /* NANOCIV */
 
 /********************************************************************** 
   Fetch section file from net
@@ -195,10 +242,19 @@ struct netfile_post *netfile_start_post(void)
 void netfile_add_form_str(struct netfile_post *post,
                           const char *name, const char *val)
 {
+#ifndef NANOCIV
   curl_formadd(&post->first, &post->last,
                CURLFORM_COPYNAME, name,
                CURLFORM_COPYCONTENTS, val,
                CURLFORM_END);
+#else /* NANOCIV */
+  if (post->body[0])
+    strcat_s(post->body, sizeof(post->body), "&");
+
+  strcat_s(post->body, sizeof(post->body), name);
+  strcat_s(post->body, sizeof(post->body), "=");
+  strcat_s(post->body, sizeof(post->body), val);
+#endif /* NANOCIV */
 }
 
 /********************************************************************** 
@@ -218,7 +274,9 @@ void netfile_add_form_int(struct netfile_post *post,
 ***********************************************************************/
 void netfile_close_post(struct netfile_post *post)
 {
+#ifndef NANOCIV
   curl_formfree(post->first);
+#endif /* NANOCIV */
   FC_FREE(post);
 }
 
@@ -238,6 +296,7 @@ bool netfile_send_post(const char *URL, struct netfile_post *post,
                        FILE *reply_fp, struct netfile_write_cb_data *mem_data,
                        const char *addr)
 {
+#ifndef NANOCIV
   CURLcode curlret;
   long http_resp;
   struct curl_slist *headers = NULL;
@@ -279,4 +338,27 @@ bool netfile_send_post(const char *URL, struct netfile_post *post,
   }
 
   return TRUE;
+#else /* NANOCIV */
+  OSFile *http = osFopen(URL, "POST");
+  osFwrite(post->body, strlen(post->body), 1, http);
+
+  static const char userAgent[] = "Freeciv/" VERSION_STRING;
+  osFsetxattr(http, "User-Agent", userAgent, sizeof(userAgent) - 1);
+
+  static const char contentType[] = "application/x-www-form-urlencoded";
+  osFsetxattr(http, "Content-Type", contentType, sizeof(contentType) - 1);
+
+  size_t len;
+  void *buf = osFmmap(http, &len);
+  if (buf)
+  {
+    if (reply_fp)
+      osFwrite(buf, len, 1, reply_fp);
+
+    osFmunmap(http, buf);
+  }
+
+  osFclose(http);
+  return buf ? TRUE : FALSE;
+#endif /* NANOCIV */
 }

@@ -62,7 +62,7 @@ const char blank_addr_str[] = "---.---.---.---";
   server. Never attempt to call this function directly, call
   connection_close() instead.
 ****************************************************************************/
-static conn_close_fn_t conn_close_callback = default_conn_close_callback;
+NANOCIV_TLS static conn_close_fn_t conn_close_callback = default_conn_close_callback;
 
 /****************************************************************************
   Default 'conn_close_fn_t' to close a connection.

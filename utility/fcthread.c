@@ -137,7 +137,16 @@ void fc_thread_cond_signal(fc_thread_cond *cond)
   cnd_signal(cond);
 }
 
-#elif defined(FREECIV_HAVE_PTHREAD)
+#elif defined(NANOCIV)
+#include <OS/thread.h>
+
+#ifdef _ACRTIMP
+__declspec(dllexport) 
+#endif
+OS_NORETURN void fc_thread_exit(int code)
+{
+  osThreadExit(code);
+}
 
 struct fc_thread_wrap_data {
   void *arg;
@@ -148,15 +157,14 @@ struct fc_thread_wrap_data {
   Wrapper which fingerprint matches one required by pthread_create().
   Calls function which matches fingerprint required by fc_thread_start()
 ***********************************************************************/
-static void *fc_thread_wrapper(void *arg)
+static int fc_thread_wrapper(void *arg)
 {
   struct fc_thread_wrap_data *data = (struct fc_thread_wrap_data *) arg;
 
   data->func(data->arg);
-
   free(data);
 
-  return NULL;
+  return 0;
 }
 
 /**********************************************************************
@@ -165,25 +173,13 @@ static void *fc_thread_wrapper(void *arg)
 int fc_thread_start(fc_thread *thread, void (*function) (void *arg),
                     void *arg)
 {
-  int ret;
-  pthread_attr_t attr;
-
   /* Freed by child thread once it's finished with data */
   struct fc_thread_wrap_data *data = fc_malloc(sizeof(*data));
 
   data->arg = arg;
   data->func = function;
 
-  /* Explicitly set thread as joinable to maximize portability
-     between pthread implementations */
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-  ret = pthread_create(thread, &attr, &fc_thread_wrapper, data);
-
-  pthread_attr_destroy(&attr);
-
-  return ret;
+  return (*thread = osThreadCreate(NULL, &fc_thread_wrapper, data)) ? 0 : -1;
 }
 
 /**********************************************************************
@@ -191,9 +187,7 @@ int fc_thread_start(fc_thread *thread, void (*function) (void *arg),
 ***********************************************************************/
 void fc_thread_wait(fc_thread *thread)
 {
-  void **return_value = NULL;
-
-  pthread_join(*thread, return_value);
+  osThreadJoin(*thread, NULL);
 }
 
 /**********************************************************************
@@ -201,14 +195,7 @@ void fc_thread_wait(fc_thread *thread)
 ***********************************************************************/
 void fc_init_mutex(fc_mutex *mutex)
 {
-  pthread_mutexattr_t attr;
-
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-
-  pthread_mutex_init(mutex, &attr);
-
-  pthread_mutexattr_destroy(&attr);
+  *mutex = osThreadMutexCreate(NULL);
 }
 
 /**********************************************************************
@@ -216,7 +203,7 @@ void fc_init_mutex(fc_mutex *mutex)
 ***********************************************************************/
 void fc_destroy_mutex(fc_mutex *mutex)
 {
-  pthread_mutex_destroy(mutex);
+  osThreadMutexFree(*mutex);
 }
 
 /**********************************************************************
@@ -224,7 +211,7 @@ void fc_destroy_mutex(fc_mutex *mutex)
 ***********************************************************************/
 void fc_allocate_mutex(fc_mutex *mutex)
 {
-  pthread_mutex_lock(mutex);
+  osThreadMutexLock(*mutex);
 }
 
 /**********************************************************************
@@ -232,7 +219,7 @@ void fc_allocate_mutex(fc_mutex *mutex)
 ***********************************************************************/
 void fc_release_mutex(fc_mutex *mutex)
 {
-  pthread_mutex_unlock(mutex);
+  osThreadMutexUnlock(*mutex);
 }
 
 /**********************************************************************
@@ -240,7 +227,7 @@ void fc_release_mutex(fc_mutex *mutex)
 ***********************************************************************/
 void fc_thread_cond_init(fc_thread_cond *cond)
 {
-  pthread_cond_init(cond, NULL);
+  *cond = osThreadCondCreate(NULL);
 }
 
 /**********************************************************************
@@ -248,7 +235,7 @@ void fc_thread_cond_init(fc_thread_cond *cond)
 ***********************************************************************/
 void fc_thread_cond_destroy(fc_thread_cond *cond)
 {
-  pthread_cond_destroy(cond);
+  osThreadCondFree(*cond);
 }
 
 /**********************************************************************
@@ -256,7 +243,7 @@ void fc_thread_cond_destroy(fc_thread_cond *cond)
 ***********************************************************************/
 void fc_thread_cond_wait(fc_thread_cond *cond, fc_mutex *mutex)
 {
-  pthread_cond_wait(cond, mutex);
+  osThreadCondWait(*cond, *mutex);
 }
 
 /**********************************************************************
@@ -264,7 +251,7 @@ void fc_thread_cond_wait(fc_thread_cond *cond, fc_mutex *mutex)
 ***********************************************************************/
 void fc_thread_cond_signal(fc_thread_cond *cond)
 {
-  pthread_cond_signal(cond);
+  osThreadCondSignal(*cond);
 }
 
 #elif defined(FREECIV_HAVE_WINTHREADS)

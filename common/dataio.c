@@ -44,6 +44,9 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#ifdef NANOCIV
+#include <libsock.h>
+#endif
 
 /* utility */
 #include "bitvector.h"
@@ -64,8 +67,8 @@
 static bool get_conv(char *dst, size_t ndst, const char *src,
                      size_t nsrc);
 
-static DIO_PUT_CONV_FUN put_conv_callback = NULL;
-static DIO_GET_CONV_FUN get_conv_callback = get_conv;
+NANOCIV_TLS static DIO_PUT_CONV_FUN put_conv_callback = NULL;
+NANOCIV_TLS static DIO_GET_CONV_FUN get_conv_callback = get_conv;
 
 /* Uncomment to make field range tests to asserts, fatal with -F */
 /* #define FIELD_RANGE_ASSERT */

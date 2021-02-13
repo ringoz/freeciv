@@ -46,12 +46,12 @@
 /* Action probability unsupported when min is this. */
 #define ACTPROB_VAL_NOT_IMPL 254
 
-static struct action *actions[ACTION_COUNT];
-static bool actions_initialized = FALSE;
+NANOCIV_TLS static struct action *actions[ACTION_COUNT];
+NANOCIV_TLS static bool actions_initialized = FALSE;
 
-static struct action_enabler_list *action_enablers_by_action[ACTION_COUNT];
+NANOCIV_TLS static struct action_enabler_list *action_enablers_by_action[ACTION_COUNT];
 
-static struct astring ui_name_str = ASTRING_INIT;
+NANOCIV_TLS static struct astring ui_name_str = ASTRING_INIT;
 
 static struct action *action_new(enum gen_action id,
                                  enum action_target_kind target_kind,

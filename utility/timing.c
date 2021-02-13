@@ -96,6 +96,8 @@ struct timer {
     struct timeval tv;
 #elif HAVE_FTIME
     struct timeb tp;
+#elif defined NANOCIV
+    OSust ust;
 #else
     time_t t;
 #endif
@@ -247,6 +249,8 @@ void timer_start(struct timer *t)
     }
 #elif defined HAVE_FTIME
     ftime(&t->start.tp);
+#elif defined NANOCIV
+    t->start.ust = osGetTimeUST();
 #else
     t->start.t = time(NULL);
     if (t->start.t == (time_t) -1) {
@@ -317,6 +321,10 @@ void timer_stop(struct timer *t)
       t->usec -= sec * N_USEC_PER_SEC;
     }
     t->start.tp = now;
+#elif defined NANOCIV
+    const OSust now = osGetTimeUST();
+    t->sec += (now - t->start.ust) / (double)NANOS_IN_SEC;
+    t->start.ust = now;
 #else
     time_t now = time(NULL);
     if (now == (time_t) -1) {
@@ -394,6 +402,14 @@ void timer_usleep_since_start(struct timer *t, long usec)
 
   if (wait_usec > 0) {
     fc_usleep(wait_usec);
+  }
+#elif defined NANOCIV
+  OSust elapsed_nsec = osGetTimeUST() - t->start.ust;
+  OSust nsec = usec * 1000ll;
+  if (nsec > elapsed_nsec)
+  {
+    extern void osThreadSleep(OSust timeout);
+    osThreadSleep(nsec - elapsed_nsec);
   }
 #else
   fc_usleep(usec);

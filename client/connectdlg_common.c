@@ -64,6 +64,87 @@ Freeciv - Copyright (C) 2004 - The Freeciv Project
 #include "connectdlg_common.h"
 #include "tilespec.h"
 
+#ifdef NANOCIV
+#include <OS/thread.h>
+#define HAVE_WORKING_FORK
+#define HAVE_USABLE_FORK
+
+extern int server_main(int argc, const char *const *argv);
+static int freeciv_server(void *context)
+{
+  int argc = 0;
+  const char *argv[24] = {};
+  for (const char *p = context; *p != 0; p += strlen(p) + 1)
+    argv[argc++] = p;
+
+#if 0
+  argv[argc++] = "--debug";
+  argv[argc++] = "3";
+#endif
+
+  static int isrv = 0;
+  {
+    char name[16];
+    osSnprintf(name, sizeof(name), "fcSrv%c", 'A' + (isrv++ % ('Z' - 'A')));
+    osThreadSetName(name);
+  }
+
+  int ret = server_main(argc, argv);
+
+  free(context);
+  return ret;
+}
+
+#define WNOHANG 0x00000001
+#define WUNTRACED 0x00000002
+#define pid_t intptr_t
+#define waitpid nano_waitpid
+static pid_t waitpid(pid_t pid, int *status, int options)
+{
+  if (options & WNOHANG)
+    return 0;
+  osThreadJoin((OSThread *)pid, NULL);
+  return pid;
+}
+#define kill nano_kill
+static int kill(pid_t pid, int sig)
+{
+  return 0;
+}
+#define fork nano_fork
+static pid_t fork(const char *const *argv)
+{
+  char *context = calloc(MAX_LEN_PATH, 1), *p = context;
+  const char *arg;
+  while ((arg = *argv++))
+  {
+    strcpy(p, arg);
+    p += strlen(p) + 1;
+  }
+  return (pid_t)osThreadCreate(NULL, freeciv_server, context);
+}
+#define open nano_open
+static int open(const char *pathname, int flags, ...)
+{
+  return -1;
+}
+#define dup2 nano_dup2
+static int dup2(int oldfd, int newfd)
+{
+  return -1;
+}
+#define fchmod nano_fchmod
+static int fchmod(int fd, int mode)
+{
+  return -1;
+}
+#define execvp nano_execvp
+static int execvp(const char *file, char *const argv[])
+{
+  return -1;
+}
+#endif
+
 #define WAIT_BETWEEN_TRIES 100000 /* usecs */
 
 #ifdef FREECIV_PATIENT_CONNECT
@@ -151,7 +232,7 @@ bool can_client_access_hack(void)
 void client_kill_server(bool force)
 {
 #ifdef HAVE_USABLE_FORK
-  if (server_quitting && server_pid > 0) {
+  if (server_quitting && server_pid != -1) {
     /* Already asked to /quit.
      * If it didn't do that, kill it. */
     if (waitpid(server_pid, NULL, WUNTRACED) <= 0) {
@@ -348,7 +429,7 @@ bool client_start_server(void)
       astr_free(&srv_cmdline_opts);
     }
 
-    server_pid = fork();
+    server_pid = fork(argv);
     server_quitting = FALSE;
 
     if (server_pid == 0) {

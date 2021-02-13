@@ -47,14 +47,14 @@ struct research_player_iter {
 };
 #define RESEARCH_PLAYER_ITER(p) ((struct research_player_iter *) p)
 
-static struct research research_array[MAX_NUM_PLAYER_SLOTS];
+NANOCIV_TLS static struct research research_array[MAX_NUM_PLAYER_SLOTS];
 
-static struct name_translation advance_unset_name = NAME_INIT;
-static struct name_translation advance_future_name = NAME_INIT;
-static struct name_translation advance_unknown_name = NAME_INIT;
+NANOCIV_TLS static struct name_translation advance_unset_name = NAME_INIT;
+NANOCIV_TLS static struct name_translation advance_future_name = NAME_INIT;
+NANOCIV_TLS static struct name_translation advance_unknown_name = NAME_INIT;
 
-static struct strvec *future_rule_name;
-static struct strvec *future_name_translation;
+NANOCIV_TLS static struct strvec *future_rule_name;
+NANOCIV_TLS static struct strvec *future_name_translation;
 
 /****************************************************************************
   Initializes all player research structure.

@@ -53,8 +53,8 @@
 
 
 /* "Global" data: */
-static struct city_hash *idex_city_hash = NULL;
-static struct unit_hash *idex_unit_hash = NULL;
+NANOCIV_TLS static struct city_hash *idex_city_hash = NULL;
+NANOCIV_TLS static struct unit_hash *idex_unit_hash = NULL;
 
 /**************************************************************************
    Initialize.  Should call this at the start before use.

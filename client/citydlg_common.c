@@ -196,17 +196,21 @@ void city_dialog_redraw_map(struct city *pcity,
   }
 
   /* First make it all black. */
+#ifndef NANOCIV
   canvas_put_rectangle(pcanvas, get_color(tileset, COLOR_MAPVIEW_UNKNOWN),
 		       0, 0,
 		       get_citydlg_canvas_width(),
 		       get_citydlg_canvas_height());
+#endif  
 
   mapview_layer_iterate(layer) {
     citydlg_iterate(pcity, ptile, pedge, pcorner, canvas_x, canvas_y) {
       struct unit *punit
 	= ptile ? get_drawable_unit(tileset, ptile, pcity) : NULL;
       struct city *pcity_draw = ptile ? tile_city(ptile) : NULL;
-
+#ifdef NANOCIV
+      pcorner = NULL;
+#endif
       put_one_element(pcanvas, 1.0, layer, ptile, pedge, pcorner,
                       punit, pcity_draw, canvas_x, canvas_y, pcity, NULL);
     } citydlg_iterate_end;

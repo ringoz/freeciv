@@ -133,7 +133,11 @@ static void signal_handler(int sig)
   1. Parses command-line arguments (possibly dialog, on mac).
   2. Calls the main server-loop routine.
 **************************************************************************/
+#ifdef NANOCIV
+int server_main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
   int inx;
   bool showhelp = FALSE;

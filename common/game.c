@@ -54,7 +54,7 @@
 
 #include "game.h"
 
-struct civ_game game;
+NANOCIV_TLS struct civ_game game;
 
 /*
 struct player_score {
@@ -80,7 +80,7 @@ struct player_score {
 };
 */
 
-bool am_i_server = FALSE;
+NANOCIV_TLS bool am_i_server = FALSE;
 
 static void game_defaults(void);
 

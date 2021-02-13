@@ -121,6 +121,7 @@ enum fc_tristate fc_tristate_and(enum fc_tristate one,
 #endif
 #endif /* PATH_SEPARATOR */
 
+#ifndef DIR_SEPARATOR
 #if defined(FREECIV_MSWINDOWS) || defined(_WIN32) || defined(__WIN32__) || defined(__EMX__) || defined(__DJGPP__)
   /* Win32, OS/2, DOS */
 # define DIR_SEPARATOR "\\"
@@ -131,6 +132,7 @@ enum fc_tristate fc_tristate_and(enum fc_tristate one,
 # define DIR_SEPARATOR "/"
 # define DIR_SEPARATOR_CHAR '/'
 #endif
+#endif /* DIR_SEPARATOR */
 
 #define PARENT_DIR_OPERATOR ".."
 
@@ -273,6 +275,7 @@ int fc_vsnprintcf(char *buf, size_t buf_len, const char *format,
      fc__attribute((nonnull (1, 3, 4)));
 
 /* Tools for fc_snprintcf(). */
+#ifndef __cplusplus
 static inline struct cf_sequence cf_bool_seq(char letter, bool value);
 static inline struct cf_sequence cf_trans_bool_seq(char letter, bool value);
 static inline struct cf_sequence cf_char_seq(char letter, char value);
@@ -429,6 +432,7 @@ static inline struct cf_sequence cf_end(void)
 
   return sequence;
 }
+#endif /* __cplusplus */
 
 bool formats_match(const char *format1, const char *format2);
 

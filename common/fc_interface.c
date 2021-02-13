@@ -28,13 +28,13 @@
 /* Struct with functions pointers; the functions are defined in
    ./client/client_main.c:init_client_functions() and
    ./server/srv_main.c:init_server_functions(). */
-struct functions fc_functions;
+NANOCIV_TLS struct functions fc_functions;
 
 /* The functions are accessed via this pointer. */
-const struct functions *fc_funcs = NULL;
+NANOCIV_TLS const struct functions *fc_funcs = NULL;
 /* After this is set to TRUE (in interface_init()), the functions are
    available via fc_funcs. */
-bool fc_funcs_defined = FALSE;
+NANOCIV_TLS bool fc_funcs_defined = FALSE;
 
 /**************************************************************************
   Return the function pointer. Only possible before interface_init() was

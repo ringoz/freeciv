@@ -41,7 +41,7 @@ struct functions {
   void (*gui_color_free)(struct color *pcolor);
 };
 
-extern const struct functions *fc_funcs;
+NANOCIV_TLS extern const struct functions *fc_funcs;
 
 struct functions *fc_interface_funcs(void);
 void fc_interface_init(void);

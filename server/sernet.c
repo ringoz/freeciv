@@ -618,6 +618,7 @@ enum server_events server_sniff_all_input(void)
       }
     }
 
+#ifndef NANOCIV
     /* Pinging around for statistics */
     if (time(NULL) > (game.server.last_ping + game.server.pingtime)) {
       /* send data about the previous run */
@@ -648,6 +649,7 @@ enum server_events server_sniff_all_input(void)
       } conn_list_iterate_end;
       game.server.last_ping = time(NULL);
     }
+#endif // NANOCIV
 
     /* if we've waited long enough after a failure, respond to the client */
     conn_list_iterate(game.all_connections, pconn) {
@@ -1012,6 +1014,7 @@ static int server_accept_connection(int sockfd)
     } conn_list_iterate_end;
   }
 
+#ifndef NANOCIV // do not trigger iOS 14 Local Network Privacy dialog
 #ifdef FREECIV_IPV6_SUPPORT
   nameinfo = (0 == getnameinfo(&fromend.saddr, fromlen, host, NI_MAXHOST,
                                service, NI_MAXSERV, NI_NUMERICSERV)
@@ -1024,6 +1027,7 @@ static int server_accept_connection(int sockfd)
     nameinfo = TRUE;
   }
 #endif /* IPv6 support */
+#endif
 
   return server_make_connection(new_sock,
                                 (nameinfo ? host : dst), dst);

@@ -478,7 +478,7 @@ static int bvplayers_count(const struct mapdef *pmapdef);
 static const char *bvplayers_str(const bv_player plrbv);
 
 /* == map images data == */
-static struct {
+NANOCIV_TLS static struct {
   bool init;
   struct mapdef_list *mapdef;
 

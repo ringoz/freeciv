@@ -80,7 +80,7 @@ extern const char *const packet_functional_capability;
 #define SPECHASH_IDATA_FREE (packet_handler_hash_data_free_fn_t) free
 #include "spechash.h"
 
-static struct packet_handler_hash *packet_handlers = NULL;
+NANOCIV_TLS static struct packet_handler_hash *packet_handlers = NULL;
 
 #ifdef USE_COMPRESSION
 static int stat_size_alone = 0;
@@ -816,8 +816,8 @@ static void packet_handlers_free(void)
 ****************************************************************************/
 const struct packet_handlers *packet_handlers_initial(void)
 {
-  static struct packet_handlers default_handlers;
-  static bool initialized = FALSE;
+  NANOCIV_TLS static struct packet_handlers default_handlers;
+  NANOCIV_TLS static bool initialized = FALSE;
 
   if (!initialized) {
     memset(&default_handlers, 0, sizeof(default_handlers));

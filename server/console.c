@@ -53,6 +53,7 @@ static int con_dump(enum rfc_status rfc_status, const char *message, ...);
 Function to handle log messages.
 This must match the log_callback_fn typedef signature.
 ************************************************************************/
+#include <OS/thread.h>
 static void con_handle_log(enum log_level level, const char *message,
                            bool file_too)
 {
@@ -78,7 +79,11 @@ static void con_handle_log(enum log_level level, const char *message,
     if (console_rfcstyle) {
       con_write(C_LOG_BASE + level, "%s", message);
     } else {
-      con_write(C_LOG_BASE + level, "%d: %s", level, message);
+      char thrname[16];
+      if (osThreadGetName(osThreadSelf(), thrname, sizeof(thrname)))
+        thrname[0] = '\0';
+
+      con_write(C_LOG_BASE + level, "[%s/%d] %s", thrname, level, message);
     }
   }
 }
@@ -200,8 +205,8 @@ Write to console and add line-break, and show prompt if required.
 void con_write(enum rfc_status rfc_status, const char *message, ...)
 {
   /* First buffer contains featured text tags */
-  static char buf1[(MAX_LEN_CONSOLE_LINE * 3) / 2];
-  static char buf2[MAX_LEN_CONSOLE_LINE];
+  char buf1[(MAX_LEN_CONSOLE_LINE * 3) / 2];
+  char buf2[MAX_LEN_CONSOLE_LINE];
   va_list args;
 
   va_start(args, message);

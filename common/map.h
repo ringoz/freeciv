@@ -307,7 +307,7 @@ bool can_freeze_terrain(const struct tile *ptile);
 bool terrain_surroundings_allow_change(const struct tile *ptile,
                                        const struct terrain *pterrain);
 
-extern struct terrain_misc terrain_control;
+NANOCIV_TLS extern struct terrain_misc terrain_control;
 
 /* This iterates outwards from the starting point.  Every tile within max_dist
  * (including the starting tile) will show up exactly once, in an outward

@@ -111,7 +111,7 @@ static char *home_dir = NULL;
 
 static bool depr_freeciv_path_warned = FALSE;
 
-static struct astring realfile = ASTRING_INIT;
+NANOCIV_TLS static struct astring realfile = ASTRING_INIT;
 
 static int compare_file_mtime_ptrs(const struct fileinfo *const *ppa,
                                    const struct fileinfo *const *ppb);
@@ -209,7 +209,7 @@ char *create_centered_string(const char *s)
 ***************************************************************/
 const char *big_int_to_text(unsigned int mantissa, unsigned int exponent)
 {
-  static char buf[64]; /* Note that we'll be filling this in right to left. */
+  NANOCIV_TLS static char buf[64]; /* Note that we'll be filling this in right to left. */
   char *grp = grouping;
   char *ptr;
   unsigned int cnt = 0;
@@ -310,7 +310,7 @@ bool is_safe_filename(const char *name)
   }
 
   for (; '\0' != name[i]; i++) {
-    if ('.' != name[i] && NULL == strchr(base64url, name[i])) {
+    if ('.' != name[i] && '|' != name[i] && NULL == strchr(base64url, name[i])) {
       return FALSE;
     }
   }
@@ -675,6 +675,9 @@ bool str_to_float(const char *str, float *pfloat)
 ***************************************************************************/
 char *user_home_dir(void)
 {
+#ifdef NANOCIV
+  return "/data";
+#endif
 #ifdef AMIGA
   return "PROGDIR:";
 #else  /* AMIGA */
@@ -771,6 +774,11 @@ char *user_username(char *buf, size_t bufsz)
    * characters (including terminator) and checked for sanity.  Note that
    * truncating a sane name can leave you with an insane name under some
    * charsets. */
+
+#ifdef NANOCIV
+  fc_strlcpy(buf, "Player", bufsz);
+  return buf;
+#endif
 
   /* If the environment variable $USER is present and sane, use it. */
   {
@@ -1364,7 +1372,11 @@ char *setup_langname(void)
   char *langname = NULL;
 
 #ifdef ENABLE_NLS
+#ifdef NANOCIV
+  langname = (char *)osGetLocale();
+#else
   langname = getenv("LANG");
+#endif
 
 #ifdef WIN32_NATIVE
   /* set LANG by hand if it is not set */
@@ -1514,7 +1526,7 @@ void init_nls(void)
 	  by default, so why bother?)
      This would result in the "C" locale being used, with grouping ""
      and thousands_sep "", where we really want "\3" and ",". */
-
+#ifndef NANOCIV
   if (strcmp(setlocale(LC_NUMERIC, NULL), "C") != 0) {
     struct lconv *lc = localeconv();
 
@@ -1537,7 +1549,7 @@ void init_nls(void)
     free(grouping_sep);
     grouping_sep = fc_strdup(lc->thousands_sep);
   }
-
+#endif // NANOCIV
   {
     char *autocap_opt_in[] = { "fi", NULL };
     int i;
@@ -1833,6 +1845,8 @@ bool make_dir(const char *pathname)
 #else  /* HAVE__MKDIR */
     mkdir(path, 0755);
 #endif /* HAVE__MKDIR */
+#elif defined(NANOCIV)
+    osMkdir(path);
 #else  /* WIN32_NATIVE */
     mkdir(path, 0755);
 #endif /* WIN32_NATIVE */

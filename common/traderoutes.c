@@ -36,7 +36,7 @@ const char *traderoute_cancelling_type_names[] = {
   "Active", "Inactive", "Cancel"
 };
 
-struct trade_route_settings trtss[TRT_LAST];
+NANOCIV_TLS struct trade_route_settings trtss[TRT_LAST];
 
 /*************************************************************************
   Return current maximum number of trade routes city can have.

@@ -747,7 +747,9 @@ void client_exit(void)
   log_close();
   cmdline_option_values_free();
 
+#ifndef NANOCIV
   exit(EXIT_SUCCESS);
+#endif
 }
 
 
@@ -1176,13 +1178,13 @@ double real_timer_callback(void)
   }
 
   time_until_next_call = zoom_update(time_until_next_call);
-
+#ifndef NANOCIV
   {
     double blink_time = blink_turn_done_button();
 
     time_until_next_call = MIN(time_until_next_call, blink_time);
   }
-
+#endif
   if (get_num_units_in_focus() > 0) {
     double blink_time = blink_active_unit();
 

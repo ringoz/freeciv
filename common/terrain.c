@@ -33,9 +33,9 @@
 
 #include "terrain.h"
 
-static struct terrain civ_terrains[MAX_NUM_TERRAINS];
-static struct resource civ_resources[MAX_NUM_RESOURCES];
-static struct user_flag user_terrain_flags[MAX_NUM_USER_TER_FLAGS];
+NANOCIV_TLS static struct terrain civ_terrains[MAX_NUM_TERRAINS];
+NANOCIV_TLS static struct resource civ_resources[MAX_NUM_RESOURCES];
+NANOCIV_TLS static struct user_flag user_terrain_flags[MAX_NUM_USER_TER_FLAGS];
 
 /****************************************************************************
   Initialize terrain and resource structures.

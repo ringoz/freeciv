@@ -45,6 +45,9 @@ extern "C" {
 #ifdef FREECIV_HAVE_WS2TCPIP_H
 #include <ws2tcpip.h>
 #endif
+#ifdef NANOCIV
+#include <libsock.h>
+#endif
 
 /* utility */
 #include "ioz.h"

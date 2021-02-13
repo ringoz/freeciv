@@ -1824,6 +1824,11 @@ void update_tile_label(struct tile *ptile)
   Draw a "full" city bar for the city.  This is a subcase of show_city_desc
   (see that function for more info) for tilesets that have a full city bar.
 ****************************************************************************/
+#ifdef NANOCIV
+extern void show_full_citybar(struct canvas *pcanvas,
+			      const int canvas_x0, const int canvas_y0,
+			      struct city *pcity, int *width, int *height);
+#else
 static void show_full_citybar(struct canvas *pcanvas,
 			      const int canvas_x0, const int canvas_y0,
 			      struct city *pcity, int *width, int *height)
@@ -2037,7 +2042,7 @@ static void show_full_citybar(struct canvas *pcanvas,
      * In the meantime, don't compensate with '/ map_zoom' here, unlike
      * for canvas_put_sprite/text/rectangle */
     canvas_put_line(pcanvas, owner_color, LINE_NORMAL,
-		    (flag_rect.x + flag_rect.w) /* / map_zoom */ - 1,
+		    (flag_rect.x + flag_rect.w) /* / map_zoom */,
                     canvas_y /* / map_zoom */,
 		    0, height1 /* / map_zoom */);
     canvas_put_sprite_full(pcanvas,
@@ -2109,7 +2114,7 @@ static void show_full_citybar(struct canvas *pcanvas,
 		  0, *height /* / map_zoom */);
   canvas_put_line(pcanvas, owner_color, LINE_NORMAL,
 		  (canvas_x - *width / 2) /* / map_zoom */,
-                  (canvas_y + *height) /* / map_zoom */ - 1,
+                  (canvas_y + *height) /* / map_zoom */,
 		  *width /* / map_zoom */, 0);
   canvas_put_line(pcanvas, owner_color, LINE_NORMAL,
 		  (canvas_x - *width / 2 + *width) /* / map_zoom */,
@@ -2121,10 +2126,11 @@ static void show_full_citybar(struct canvas *pcanvas,
   if (gui_options.draw_city_names && should_draw_lower_bar) {
     canvas_put_line(pcanvas, owner_color, LINE_NORMAL,
 		    (canvas_x - *width / 2) /* / map_zoom */,
-                    (canvas_y + height1) /* / map_zoom */ - 1,
+                    (canvas_y + height1) /* / map_zoom */,
 		    *width /* / map_zoom */, 0);
   }
 }
+#endif // NANOCIV
 
 /****************************************************************************
   Draw a "small" city bar for the city.  This is a subcase of show_city_desc
