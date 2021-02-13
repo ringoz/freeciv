@@ -2197,7 +2197,7 @@ static void dai_manage_caravan(struct ai_type *ait, struct player *pplayer,
        || unit_data->task == AIUNIT_WONDER)) {
     /* we are moving to our destination */
     /* we check to see if our current goal is feasible */
-    struct city *city_dest = tile_city(punit->goto_tile);
+    struct city *city_dest = punit->goto_tile ? tile_city(punit->goto_tile) : NULL; // $ringo fixed NPE
 
     if ((city_dest == NULL) 
         || !pplayers_allied(unit_owner(punit), city_dest->owner)
