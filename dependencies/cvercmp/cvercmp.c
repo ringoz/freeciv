@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "cvercmp.h"
 
 static char **cvercmp_ver_tokenize(const char *ver);

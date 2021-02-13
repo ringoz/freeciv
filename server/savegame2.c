@@ -73,6 +73,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 /* utility */
 #include "bitvector.h"
 #include "fcintl.h"
