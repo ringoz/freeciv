@@ -141,7 +141,12 @@ function classPackage:preamble ()
  output('/* function to register type */')
  output('static void tolua_reg_types (lua_State* tolua_S)')
  output('{')
- foreach(_usertype,function(n,v) output(' tolua_usertype(tolua_S,"',v,'");') end)
+ _usertype_sorted = {}
+ for n,v in pairs(_usertype) do
+  table.insert(_usertype_sorted, v)
+ end
+ table.sort(_usertype_sorted)
+ foreach(_usertype_sorted,function(n,v) output(' tolua_usertype(tolua_S,"',v,'");') end)
  output('}')
  output('\n')
 end
@@ -182,7 +187,7 @@ end
 -- write header file
 function classPackage:header ()
  output('/*\n') output('** Lua binding: '..self.name..'\n')
- output('** Generated automatically by '..TOLUA_VERSION..' on '..date()..'.\n')
+--  output('** Generated automatically by '..TOLUA_VERSION..' on '..date()..'.\n')
  output('*/\n\n')
 
  if not flags.h then
