@@ -138,7 +138,7 @@ static time_t l_checktime (lua_State *L, int arg) {
 
 
 
-#ifndef NANOCIV
+#ifndef __APPLE__
 static int os_execute (lua_State *L) {
   const char *cmd = luaL_optstring(L, 1, NULL);
   int stat = system(cmd);
@@ -389,7 +389,7 @@ static const luaL_Reg syslib[] = {
   {"clock",     os_clock},
   {"date",      os_date},
   {"difftime",  os_difftime},
-#ifndef NANOCIV
+#ifndef __APPLE__
   {"execute",   os_execute},
 #endif
   {"exit",      os_exit},
