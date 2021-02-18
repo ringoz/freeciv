@@ -372,7 +372,7 @@ void audio_restart(const char *soundset_name, const char *musicset_name)
 static void music_finished_callback(void)
 {
   bool usage_enabled = TRUE;
-
+#ifndef NANOCIV
   if (switching_usage) {
     switching_usage = FALSE;
 
@@ -387,7 +387,7 @@ static void music_finished_callback(void)
 
     return;
   }
-
+#endif
   switch (current_usage) {
   case MU_MENU:
     usage_enabled = gui_options.sound_enable_menu_music;
