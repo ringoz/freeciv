@@ -173,6 +173,7 @@ void unit_focus_add(struct unit *punit);
 void unit_focus_remove(struct unit *punit);
 void unit_focus_urgent(struct unit *punit);
 
+bool unit_focus_can_advance(void);
 void unit_focus_advance(void);
 void unit_focus_update(void);
 

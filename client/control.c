@@ -635,6 +635,20 @@ static struct unit *find_best_focus_candidate(bool accept_current)
  
  FIXME: Add feature to focus only units of a certain category.
 **************************************************************************/
+bool unit_focus_can_advance(void)
+{
+  if (NULL == client.conn.playing
+      || !is_player_phase(client.conn.playing, game.info.phase)
+      || !can_client_change_view()) {
+    return false;
+  }
+
+  if (unit_list_size(urgent_focus_queue) > 0)
+    return true;
+
+  return find_best_focus_candidate(TRUE) != NULL;
+}
+
 void unit_focus_advance(void)
 {
   struct unit *candidate = NULL;
