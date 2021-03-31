@@ -285,6 +285,8 @@ target_sources(fc_common PRIVATE
     utility/netintf.h
     utility/rand.c
     utility/rand.h
+    utility/randseed.c
+    utility/randseed.h
     utility/registry.c
     utility/registry.h
     utility/registry_ini.c

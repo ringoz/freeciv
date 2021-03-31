@@ -166,6 +166,15 @@ unsigned int generate_game_seed(void)
 {
   uint32_t seed = 0;
   
+#ifdef NANOCIV
+  extern OS_API int osCryptoRandom(uint8_t *buf, size_t buflen);
+  if (0 == osCryptoRandom((uint8_t *)&seed, sizeof(seed)))
+  {
+    log_debug("Got random seed from osCryptoRandom()");
+    return seed;
+  }
+#endif
+
   /* Good random sources */
   if (generate_seed_getentropy(&seed)) {
     log_debug("Got random seed from getentropy()");
