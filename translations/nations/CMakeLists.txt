@@ -3,40 +3,14 @@
 ########################################################################
 
 gettext_process_po_files(all PO_FILES 
-    ar.po
-    bg.po
     ca.po
-    cs.po
-    da.po
     de.po
-    el.po
     en_GB.po
-    eo.po
     es.po
-    et.po
-    fa.po
     fi.po
     fr.po
-    ga.po
-    gd.po
-    he.po
-    hu.po
-    id.po
-    it.po
     ja.po
-    ko.po
-    lt.po
-    nb.po
-    nl.po
     pl.po
-    pt.po
-    pt_BR.po
-    ro.po
     ru.po
-    sr.po
-    sv.po
-    tr.po
     uk.po
-    zh_CN.po
-    zh_TW.po
   )
