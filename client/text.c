@@ -159,12 +159,14 @@ const char *popup_info_text(struct tile *ptile)
   bool first;
 
   astr_clear(&str);
+#ifndef NANOCIV
   index_to_map_pos(&tile_x, &tile_y, tile_index(ptile));
   astr_add_line(&str, _("Location: (%d, %d) [%d]"),
                 tile_x, tile_y, tile_continent(ptile));
   index_to_native_pos(&nat_x, &nat_y, tile_index(ptile));
   astr_add_line(&str, _("Native coordinates: (%d, %d)"),
                 nat_x, nat_y);
+#endif
 
   if (client_tile_get_known(ptile) == TILE_UNKNOWN) {
     astr_add(&str, _("Unknown"));
