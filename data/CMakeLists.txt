@@ -1,5 +1,5 @@
 ########################################################################
-# Nanociv - Copyright (C) 2016 - Vladimir Davidovich
+# Nanociv - Copyright (C) 2020 - Vladimir Davidovich
 ########################################################################
 
 set(FC_DATA_FILES
