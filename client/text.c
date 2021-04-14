@@ -456,7 +456,9 @@ const char *popup_info_text(struct tile *ptile)
     }
   }
 
+#ifndef NANOCIV
   astr_break_lines(&str, LINE_BREAK);
+#endif
   return astr_str(&str);
 }
 
