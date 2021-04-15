@@ -422,6 +422,45 @@ static int audio_play_tag(struct section_file *sfile,
 
   if (sfile) {
     soundfile = secfile_lookup_str(sfile, "files.%s", tag);
+#ifdef NANOCIV
+    if (soundfile == NULL)
+    {
+      if ((soundfile = secfile_lookup_str(sfile, "folders.%s", tag)))
+      {
+        DIR *dir = fc_opendir(fileinfoname(get_data_dirs(), soundfile));
+        if (dir)
+        {
+          struct strvec *files = strvec_new();
+          {
+            dirent *entry;
+            while ((entry = readdir(dir)))
+            {
+              if (entry->d_name[0] == '.')
+                continue;
+
+              strvec_append(files, entry->d_name);
+            }
+          }
+          closedir(dir);
+
+          if (strvec_size(files) > 0)
+          {
+            static char path[256];
+            fc_strlcpy(path, soundfile, sizeof(path));
+            fc_strlcat(path, DIR_SEPARATOR, sizeof(path));
+            fc_strlcat(path, strvec_get(files, fc_rand(strvec_size(files))), sizeof(path));
+            soundfile = path;
+          }
+          else
+            soundfile = NULL;
+
+          strvec_destroy(files);
+        }
+        else 
+          soundfile = NULL;
+      }
+    }
+#endif
     if (soundfile == NULL) {
       const char *files[MAX_ALT_AUDIO_FILES];
       int excluded = -1;
