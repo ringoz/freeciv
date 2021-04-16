@@ -48,7 +48,7 @@
  * Can be duplicated/saved/restored via fc_rand_state()
  * and fc_rand_set_state().
  */
-static RANDOM_STATE rand_state;
+NANOCIV_TLS static RANDOM_STATE rand_state;
 
 /*************************************************************************
   Returns a new random value from the sequence, in the interval 0 to
