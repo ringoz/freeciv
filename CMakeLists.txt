@@ -67,7 +67,7 @@ set(FC_COMPILE_OPTIONS
   )
 
 add_library(fc_common STATIC)
-target_link_libraries(fc_common PUBLIC nano_lib)
+target_link_libraries(fc_common PUBLIC nanolib)
 target_include_directories(fc_common PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_CURRENT_SOURCE_DIR}/common/aicore
