@@ -867,6 +867,7 @@ static void base_set_mapview_origin(float gui_x0, float gui_y0)
      * rectangle) is copied.  Then the remaining areas (two rectangles)
      * are updated through update_map_canvas. */
     struct canvas *target = mapview.tmp_store;
+    canvas_mapview_init(target); // NANOCIV optimization
 
     if (old_gui_x0 < gui_x0) {
       update_x0 = MAX(old_gui_x0 + width, gui_x0);
@@ -1708,6 +1709,8 @@ void update_map_canvas(int canvas_x, int canvas_y, int width, int height)
     mapview.store = mapview.tmp_store;
     mapview.tmp_store = tmp;
   }
+
+  canvas_mapview_init(mapview.store); // NANOCIV optimization
 
   /* Clear the area.  This is necessary since some parts of the rectangle
    * may not actually have any tiles drawn on them.  This will happen when
