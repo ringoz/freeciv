@@ -284,7 +284,7 @@ struct civ_game {
   } callbacks;
 };
 
-extern bool am_i_server;
+extern NANOCIV_TLS bool am_i_server;
 
 /**************************************************************************
   Is the program type server?
