@@ -19,17 +19,23 @@
 
 #include "fc_prehdrs.h"
 
+#ifdef HAVE_BCRYPT_H
+#include <bcrypt.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
 #include <string.h>
-#ifdef HAVE_SYS_RANDOM_H
+#if defined(HAVE_SYS_RANDOM_H) && defined(HAVE_GETENTROPY)
 #include <sys/random.h>
 #endif
 #include <sys/stat.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef FREECIV_MSWINDOWS
+#include <ntdef.h>
 #endif
 
 /* utility */
@@ -43,15 +49,15 @@
   (Linux, FreeBSD, OpenBSD, macOS)
   Return FALSE on error, otherwise return TRUE and store seed in *ret.
 **************************************************************************/
-static bool generate_seed_getentropy(uint32_t *ret)
+static bool generate_seed_getentropy(randseed *ret)
 {
 #if HAVE_GETENTROPY
   /* getentropy() is from OpenBSD, and should be supported on at least
    * FreeBSD and glibc on Linux (as a wrapper to getrandom()) as well.
    */
-  uint32_t seed = 0;
+  randseed seed = 0;
   
-  if (getentropy(&seed, 4) == 0) {
+  if (getentropy(&seed, sizeof(seed)) == 0) {
     *ret = seed;
 
     return TRUE;
@@ -64,13 +70,34 @@ static bool generate_seed_getentropy(uint32_t *ret)
 }
 
 /**************************************************************************
+  Read a 32-bit random value using BCryptGenRandom(), if available.
+  (Windows)
+  Return FALSE on error, otherwise return TRUE and store seed in *ret.
+**************************************************************************/
+static bool generate_seed_bcryptgenrandom(randseed *ret)
+{
+#ifdef HAVE_BCRYPTGENRANDOM
+  NTSTATUS Status;
+
+  Status = BCryptGenRandom(NULL, (PUCHAR)ret, sizeof(randseed),
+                           BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+
+  if (NT_SUCCESS(Status)) {
+    return TRUE;
+  }
+#endif /* HAVE_BCRYPTGENRANDOM */
+
+  return FALSE;
+}
+
+/**************************************************************************
   Read a 32-bit random value using /dev/urandom, if available. 
   (Most Unix-like systems)
   Return FALSE on error, otherwise return TRUE and store seed in *ret.
 **************************************************************************/
-static bool generate_seed_urandom(uint32_t *ret)
+static bool generate_seed_urandom(randseed *ret)
 {
-#if HAVE__DEV_URANDOM   /* the first slash turns to an extra underline */
+#if HAVE_USABLE_URANDOM
   /*
    * /dev/urandom should be available on most Unixen. The Wikipedia page
    * mentions Linux, FreeBSD, OpenBSD, macOS as well as Solaris, NetBSD,
@@ -82,7 +109,7 @@ static bool generate_seed_urandom(uint32_t *ret)
    */
   static const char *random_device = "/dev/urandom";
   int fd = 0;
-  uint32_t seed = 0;
+  randseed seed = 0;
   bool ok = FALSE;
 
   /* stdio would read an unnecessarily large block, which may mess up users
@@ -91,11 +118,11 @@ static bool generate_seed_urandom(uint32_t *ret)
   if (fd == -1) {
     log_error(_("Opening %s failed: %s"), random_device, strerror(errno));
   } else {
-    int n = read(fd, &seed, 4);
+    int n = read(fd, &seed, sizeof(seed));
 
     if (n == -1) {
       log_error(_("Reading %s failed: %s"), random_device, strerror(errno));
-    } else if (n != 4) {
+    } else if (n != sizeof(seed)) {
       log_error(_("Reading %s: short read without error"), random_device);
     } else {
       ok = 1;
@@ -107,7 +134,7 @@ static bool generate_seed_urandom(uint32_t *ret)
 
     return TRUE;
   }
-#endif /* HAVE__DEV_URANDOM */
+#endif /* HAVE_USABLE_URANDOM */
 
   return FALSE;
 }
@@ -117,7 +144,7 @@ static bool generate_seed_urandom(uint32_t *ret)
   clock_gettime(), if available. (POSIX-compatible systems.)
   Return FALSE on error, otherwise return TRUE and store seed in *ret.
 **************************************************************************/
-static bool generate_seed_clock_gettime(uint32_t *ret)
+static bool generate_seed_clock_gettime(randseed *ret)
 {
 #if HAVE_CLOCK_GETTIME
   /* 
@@ -127,7 +154,7 @@ static bool generate_seed_clock_gettime(uint32_t *ret)
    * Xor them together to hopefully get something relatively unpredictable in the
    * bottom 30 bits. 
    */
-  uint32_t seed = 0;
+  randseed seed = 0;
   struct timespec tp;
 
   if (clock_gettime(CLOCK_REALTIME, &tp) == 0) {
@@ -149,10 +176,10 @@ static bool generate_seed_clock_gettime(uint32_t *ret)
   Generate a lousy 32-bit random-ish value from the current time.
   Return TRUE and store seed in *ret.
 **************************************************************************/
-static bool generate_seed_time(uint32_t *ret)
+static bool generate_seed_time(randseed *ret)
 {
   /* No reasonable way this can fail */
-  *ret = (uint32_t) time(NULL);
+  *ret = (randseed) time(NULL);
 
   return TRUE;
 }
@@ -178,6 +205,10 @@ unsigned int generate_game_seed(void)
   /* Good random sources */
   if (generate_seed_getentropy(&seed)) {
     log_debug("Got random seed from getentropy()");
+    return seed;
+  }
+  if (generate_seed_bcryptgenrandom(&seed)) {
+    log_debug("Got random seed from BCryptGenRandom()");
     return seed;
   }
   if (generate_seed_urandom(&seed)) {

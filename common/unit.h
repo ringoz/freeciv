@@ -30,7 +30,7 @@ extern "C" {
 struct road_type;
 struct unit_move_data; /* Actually defined in "server/unittools.c". */
 
-/* Changing this enum will break network compatability. */
+/* Changing this enum will break network compatibility. */
 enum unit_orders {
   ORDER_MOVE = 0,
   ORDER_ACTIVITY = 1,
@@ -374,6 +374,7 @@ enum unit_upgrade_result unit_upgrade_info(const struct unit *punit,
                                            char *buf, size_t bufsz);
 bool unit_can_convert(const struct unit *punit);
 
+int hp_gain_coord(struct unit *punit);
 bool is_losing_hp(const struct unit *punit);
 bool unit_type_is_losing_hp(const struct player *pplayer,
                             const struct unit_type *punittype);

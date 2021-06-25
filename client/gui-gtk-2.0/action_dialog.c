@@ -104,7 +104,7 @@ static struct action_data *act_data(int actor_id,
 
 /**************************************************************************
   Move the queue of units that need user input forward unless the current
-  unit are going to need more input.
+  unit is going to need more input.
 **************************************************************************/
 static void diplomat_queue_handle_primary(void)
 {
@@ -143,12 +143,12 @@ static void diplomat_queue_handle_primary(void)
 }
 
 /**************************************************************************
-  Move the queue of diplomats that need user input forward since the
-  current diplomat got the extra input that was required.
+  Move the queue of units that need user input forward since the
+  current unit doesn't require the extra input any more.
 **************************************************************************/
 static void diplomat_queue_handle_secondary(void)
 {
-  /* Stop waiting. Move on to the next queued diplomat. */
+  /* Stop waiting. Move on to the next queued unit. */
   is_more_user_input_needed = FALSE;
   diplomat_queue_handle_primary();
 }

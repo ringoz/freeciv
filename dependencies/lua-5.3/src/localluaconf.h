@@ -14,11 +14,8 @@
 #define FC__LOCALLUACONF_H
 
 #ifdef HAVE_CONFIG_H
-#include <fc_config.h>
+#include <liblua_config.h>
 #endif
-
-/* Lua headers want to define VERSION to lua version */
-#undef VERSION
 
 #if defined(HAVE_MKSTEMP) && defined(FREECIV_HAVE_UNISTD_H)
 #define LUA_USE_MKSTEMP

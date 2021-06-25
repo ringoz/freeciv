@@ -4,7 +4,7 @@ Installing Freeciv:
 
 This file describes how to compile and install Freeciv. Last time we
 made sure this file is up to date was 16-Jul-06.
-Last minor update was 09-Apr-20.
+Last minor update was 10-May-21.
 
 There may be a localized version of this file in the ./doc directory,
 named INSTALL.<locale> (e.g., INSTALL.de).
@@ -28,9 +28,8 @@ This document contains sections and subsections as follows:
      6. Readline Support:
      7. Reinier's Solaris Installation Notes:
      8. Reinier's libXpm Solaris Installation Notes:
-     9. Mac OS X and Darwin notes:
-    10. Debian GNU/Linux notes:
-    11. Windows notes:
+     9. Debian GNU/Linux notes:
+    10. Windows notes:
 
 
 0. Prerequisites:
@@ -44,10 +43,10 @@ out whether your system is suitable.  If in doubt, just try it.
 
    The Unix operating system, a work-alike such as Linux or FreeBSD,
    or some OS that provides a very Unix-like personality or mode, like
-   EMX under OS/2 or the Cygnus Cygwin toolkit under Windows.
-   (See http://sourceware.cygnus.com/cygwin/).  Support for
-   BSD-style TCP/IP sockets is essential, as is a Bourne-shell
-   compatible shell, such as GNU "bash".  (Most Unixes fit the bill...)
+   EMX under OS/2 or the Cygwin toolkit under Windows.
+   (See https://www.cygwin.com/). Support for BSD-style TCP/IP sockets
+   is essential, as is a Bourne-shell compatible shell, such as GNU "bash".
+   (Most Unixes fit the bill...)
 
  - An ANSI C compiler.
 
@@ -57,7 +56,7 @@ out whether your system is suitable.  If in doubt, just try it.
 
    Development of Freeciv is primarily done with "gcc", the GNU
    project's excellent C compiler.  Releases can be compiled with gcc
-   or most other compilers (such as the unbundled Solaris C compiler).
+   or most other compilers (such as clang or the unbundled Solaris C compiler).
    Note that there have been reports that gcc with -O3 miscompiled
    freeciv.
 
@@ -485,7 +484,20 @@ following order: pkg-config, Glib, Atk, Pango, Gdk-Pixbuf, Gtk+.
  - C++ compiler.
 
    Qt-client is written in C++, so you need appropriate compiler.
-   In Freeciv development, g++ has been used.
+
+   In Freeciv development, g++ has been the primary C++ compiler.
+   Also clang++ has been used.
+
+ - Qt Meta Object Compiler (moc)
+
+   Qt's Meta Object Compiler is a command usually called 'moc', or
+   'moc-qt5' in some systems. Freeciv needs Qt5 version.
+   You may want install 'qtchooser' to find correct moc version for you
+   when you have both multiple Qt versions installed in parallel.
+
+   If configure does not find (correct) moc, you can give it with
+   environment variable MOCCMD, e.g.,
+   ./configure MOCCMD="/home/freeciv/local-qt/bin/moc" --enable-client=qt
 
  - Qt5Core, Qt5Gui, and Qt5Widgets libraries and headers.
    At least version 5.2 is required.
@@ -780,35 +792,8 @@ The Procedure:
    commands.
 
 
-9. Mac OS X and Darwin notes:
-=============================
-
-Apple's version of GCC uses precompiled headers that does not support
-vararg macros (a GCC extension).  This causes GCC to fail when
-compiling Freeciv since the compiler is otherwise (mostly)
-indistinguishable from vanilla GCC.  So instead of the usual
-
-  % ./configure <...>
-
-you should use either
-
- Bourne shell:
-   $ CC="gcc -no-cpp-precomp" ./configure <...>
-
-or
-
- C shell:
-   % env CC="gcc -no-cpp-precomp" ./configure <...>
-
-depending on whether your shell is a Bourne or C shell variant.  (If
-in doubt, just try both to see which one will work.)
-
-Replace <...> with whatever additional arguments you want to give to
-configure.
-
-
-10. Debian GNU/Linux notes:
-===========================
+9. Debian GNU/Linux notes:
+==========================
 
 To compile freeciv on a debian system you need the following packages:
 
@@ -834,7 +819,7 @@ AM_PATH_GDK_IMLIB macro. It is a bug in debian that this macro isn't
 in gdk-imlib-dev, and it will hopefully be fixed in future debian
 releases.
 
-11. Windows notes:
+10. Windows notes:
 ==================
 
 Windows version of Freeciv can be built either with MinGW (msys1 or msys2)

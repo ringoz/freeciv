@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([common/game.c])
 AC_CONFIG_AUX_DIR(bootstrap) # This can't be quoted or automake will fail
 AC_CONFIG_MACRO_DIR([m4])
 ifdef([AC_CONFIG_MACRO_DIRS],[AC_CONFIG_MACRO_DIRS([dependencies/m4])])
-AC_CONFIG_HEADERS([gen_headers/fc_config.h gen_headers/freeciv_config.h])
+AC_CONFIG_HEADERS([gen_headers/fc_config.h gen_headers/freeciv_config.h gen_headers/liblua_config.h])
 AC_CANONICAL_HOST
 AC_USE_SYSTEM_EXTENSIONS
 AC_C_BIGENDIAN
@@ -672,7 +672,7 @@ AC_C99_VARIABLE_ARRAYS
 AC_C99_INITIALIZERS
 AC_C99_STDINT_H
 
-FC_C99_INITIALIZER_BRACES
+FC_INITIALIZER_BRACES
 
 FC_C11_STATIC_ASSERT
 FC_C11_AT_QUICK_EXIT
@@ -1317,13 +1317,33 @@ AC_CHECK_FUNCS([getpwuid inet_aton select snooze strcasecmp strcasestr])
 AC_CHECK_FUNCS([strerror strlcat strlcpy strncasecmp strstr uname nanosleep])
 AC_CHECK_FUNCS([usleep getline _strcoll stricoll _stricoll strcasecoll backtrace])
 
-dnl Possible random sources on Unixen
+dnl Possible random sources
+AC_CHECK_HEADERS([sys/random.h])
+AC_CHECK_HEADERS([bcrypt.h], [bcrypt_h_found=yes], [bcrypt_h_found=no])
+if test "x$bcrypt_h_found" = "xyes" ; then
+  dnl Cygwin would find the symbol in library despite not finding the header,
+  dnl leading to compile time error if we set HAVE_BCRYPTGENRANDOM
+  AC_CHECK_LIB([bcrypt], [BCryptGenRandom], [
+    AC_DEFINE([HAVE_BCRYPTGENRANDOM], [1], [BCryptGenRandom() available])
+    UTILITY_LIBS="${UTILITY_LIBS} -lbcrypt" ])
+fi
 AC_CHECK_FUNCS([getentropy clock_gettime])
 
-AC_CHECK_HEADERS([sys/random.h])
-
-dnl TODO: Reimplement this check, in a cross-compiling friendly way
-dnl AC_CHECK_FILES([/dev/urandom])
+if test "x$MINGW" != "xyes" ; then
+  dnl /dev/urandom could be found within msys2 environment, but it would not
+  dnl be available in the final target environment when freeciv gets installed.
+  dnl Just don't check for it in Windows.
+  AC_CACHE_VAL([ac_cv_dev_urandom],
+    [if test "x$cross_compiling" != "xyes" ; then
+       AC_CHECK_FILES([/dev/urandom], [ac_cv_dev_urandom=yes], [ac_cv_dev_urandom=no])
+     else
+       dnl Pessimistic default when cross-compiling
+       ac_cv_dev_urandom=no
+     fi])
+  if test "x${ac_cv_dev_urandom}" = "xyes" ; then
+    AC_DEFINE([HAVE_USABLE_URANDOM], [1], [Build in /dev/urandom support])
+  fi
+fi
 
 dnl Possible "-Wmissing-declarations" and "-Werror" will prune out
 dnl cases where we should not use _mkdir() even if it's possible to link against it
@@ -1542,6 +1562,28 @@ CFLAGS="$EXTRA_DEBUG_CFLAGS $CFLAGS"
 CXXFLAGS="$EXTRA_DEBUG_CXXFLAGS $CXXFLAGS"
 LDFLAGS="$EXTRA_DEBUG_LDFLAGS $LDFLAGS"
 
+dnl Check this when -Werror is already set, if we're going to set it
+FC_VALUE_AFTER_EXIT
+
+if test "x$gui_xaw" = "xyes" ; then
+  AC_CACHE_CHECK([['const' for XawListChange()]], [ac_cv_const_for_xaw_list_change],
+    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <X11/Xaw/List.h>
+]],
+      [char *test_strings[[2]];
+XawListChange(NULL, test_strings, 0, 0, False);])],
+      [ac_cv_const_for_xaw_list_change=no],
+      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <X11/Xaw/List.h>
+]],
+        [const char *test_strings[[2]];
+XawListChange(NULL, test_strings, 0, 0, False);])],
+        [ac_cv_const_for_xaw_list_change=yes], [ac_cv_const_for_xaw_list_change=unknown])])])
+  if test "x${ac_cv_const_for_xaw_list_change}" = "xyes" ; then
+    AC_DEFINE([CONST_FOR_XAW_LIST_CHANGE], [const], [[Use const for XawListChange() parameter]])
+  else
+    AC_DEFINE([CONST_FOR_XAW_LIST_CHANGE], [], [[Do not use const for XawListChange() parameter]])
+  fi
+fi
+
 dnl Rebuild 'configure' whenever fc_version changes, if maintainer mode enabled.
 AC_SUBST([CONFIGURE_DEPENDENCIES], ["$CONFIGURE_DEPENDENCIES \$(top_srcdir)/fc_version"])
 
@@ -1677,6 +1719,7 @@ AC_CONFIG_FILES([Makefile
           translations/ruledit/Makefile.in
 	  doc/Makefile
 	  doc/man/Makefile
+          doc/man/freeciv.6
           doc/man/freeciv-client.6
           doc/man/freeciv-server.6
           doc/man/freeciv-manual.6

@@ -1867,11 +1867,11 @@ static void city_dialog_update_information(GtkWidget **info_ebox,
   fc_snprintf(buf[INFO_POLLUTION], sizeof(buf[INFO_POLLUTION]), "%4d",
               pcity->pollution);
   if (!game.info.illness_on) {
-    fc_snprintf(buf[INFO_ILLNESS], sizeof(buf[INFO_ILLNESS]), " -.-");
+    fc_snprintf(buf[INFO_ILLNESS], sizeof(buf[INFO_ILLNESS]), "  -.-");
   } else {
     illness = city_illness_calc(pcity, NULL, NULL, NULL, NULL);
     /* illness is in tenth of percent */
-    fc_snprintf(buf[INFO_ILLNESS], sizeof(buf[INFO_ILLNESS]), "%4.1f%%",
+    fc_snprintf(buf[INFO_ILLNESS], sizeof(buf[INFO_ILLNESS]), "%5.1f%%",
                 (float)illness / 10.0);
   }
 
@@ -3214,7 +3214,7 @@ static void impr_callback(GtkTreeView *view, GtkTreePath *path,
 
   gtk_tree_model_get(model, &it, 0, &pimprove, -1);
 
-  win = gdk_get_default_root_window();
+  win = gtk_widget_get_parent_window(GTK_WIDGET(view));
   seat = gdk_display_get_default_seat(gdk_window_get_display(win));
 
   gdk_window_get_device_position(win, gdk_seat_get_pointer(seat),

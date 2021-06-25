@@ -1023,6 +1023,15 @@ bool utype_player_already_has_this_unique(const struct player *pplayer,
     return FALSE;
   }
 
+  return utype_player_already_has_this(pplayer, putype);
+}
+
+/**********************************************************************//**
+  Returns TRUE iff the player already has a unit of this type.
+**************************************************************************/
+bool utype_player_already_has_this(const struct player *pplayer,
+                                   const struct unit_type *putype)
+{
   unit_list_iterate(pplayer->units, existing_unit) {
     if (putype == unit_type_get(existing_unit)) {
       /* FIXME: This could be slow if we have lots of units. We could
@@ -1345,11 +1354,9 @@ struct unit_type *best_role_unit(const struct city *pcity, int role)
                     || (role >= L_LAST && role < MAX_UNIT_ROLES), NULL);
   fc_assert_ret_val(!first_init, NULL);
 
-  for(j=n_with_role[role]-1; j>=0; j--) {
+  for (j = n_with_role[role] - 1; j >= 0; j--) {
     u = with_role[role][j];
-    if ((1 != utype_fuel(u) || uclass_has_flag(utype_class(u), UCF_MISSILE))
-        && can_city_build_unit_now(pcity, u)) {
-      /* Allow fuel==1 units when pathfinding can handle them. */
+    if (can_city_build_unit_now(pcity, u)) {
       return u;
     }
   }

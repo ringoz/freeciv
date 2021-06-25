@@ -35,7 +35,7 @@ the rules of the game.\
 ")
 
 ; Detailed description
-; When updating this, update also desciption_file in [ruledit] section to match
+; When updating this, update also description_file in [ruledit] section to match
 ; description = ""
 
 [options]
@@ -90,7 +90,9 @@ init_vis_radius_sq	= 5
 ; A base bribe cost, modified heavily by other factors
 base_bribe_cost  = 750
 
-; Barbarian leader ransom in gold
+; Barbarian leader ransom in gold. The ransom is taken from
+; the victim (typically a barbarian player), and it`s possible
+; they cannot pay this in full.
 ransom_gold      = 100
 
 ; Number of veteran levels lost when upgrading a unit

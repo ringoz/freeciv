@@ -1429,9 +1429,11 @@ void unit_tile_set(struct unit *punit, struct tile *ptile)
 }
 
 /**************************************************************************
-Returns true if the tile contains an allied unit and only allied units.
-(ie, if your nation A is allied with B, and B is allied with C, a tile
-containing units from B and C will return false)
+  Returns one of the units, if the tile contains an allied unit and
+  only allied units. Returns NULL if there is no units, or some of them
+  are not allied.
+  (ie, if your nation A is allied with B, and B is allied with C, a tile
+  containing units from B and C will return NULL)
 **************************************************************************/
 struct unit *is_allied_unit_tile(const struct tile *ptile,
 				 const struct player *pplayer)
@@ -2072,7 +2074,12 @@ bool unit_can_convert(const struct unit *punit)
     return FALSE;
   }
 
-  if (!can_exist_at_tile(tgt, unit_tile(punit))) {
+  if (punit->transporter != NULL) {
+    if (!can_unit_type_transport(unit_type_get(punit->transporter),
+                                 utype_class(tgt))) {
+      return FALSE;
+    }
+  } else if (!can_exist_at_tile(tgt, unit_tile(punit))) {
     return FALSE;
   }
 
@@ -2154,6 +2161,37 @@ enum unit_upgrade_result unit_upgrade_info(const struct unit *punit,
   }
 
   return result;
+}
+
+/********************************************************************//****
+  returns how many hp's a unit will gain on this square
+  depends on whether or not it's inside city or fortress.
+  barracks will regen landunits completely
+  airports will regen airunits  completely
+  ports    will regen navalunits completely
+  fortify will add a little extra.
+***************************************************************************/
+int hp_gain_coord(struct unit *punit)
+{
+  int hp = 0;
+  const int base = unit_type_get(punit)->hp;
+
+  /* Includes barracks (100%), fortress (25%), etc. */
+  hp += base * get_unit_bonus(punit, EFT_HP_REGEN) / 100;
+
+  if (tile_city(unit_tile(punit))) {
+    hp = MAX(hp, base / 3);
+  }
+
+  if (!unit_class_get(punit)->hp_loss_pct) {
+    hp += (base + 9) / 10;
+  }
+
+  if (punit->activity == ACTIVITY_FORTIFIED) {
+    hp += (base + 9) / 10;
+  }
+
+  return MAX(hp, 0);
 }
 
 /**************************************************************************
@@ -2255,7 +2293,7 @@ int unit_bribe_cost(struct unit *punit, struct player *briber)
   cost /= dist + 2;
 
   /* Consider the build cost. */
-  cost *= unit_build_shield_cost(punit) / 10;
+  cost *= unit_build_shield_cost(punit) / 10.0;
 
   /* Rule set specific cost modification */
   cost += (cost

@@ -77,14 +77,15 @@ static void set_socket_errno(void)
 {
   int err = WSAGetLastError();
 
-  switch(err) {
-    /* these have mappings to symbolic errno names in netintf.h */ 
+  switch (err) {
+    /* these have mappings to symbolic errno names in net_types.h */
     case WSAEINTR:
     case WSAEWOULDBLOCK:
     case WSAECONNRESET:
     case WSAECONNREFUSED:
     case WSAETIMEDOUT:
     case WSAECONNABORTED:
+    case WSAENOTSOCK:
       errno = err;
       return;
     default:

@@ -65,7 +65,7 @@ AC_DEFUN([FC_QT5_GENERIC],
 
   if test "x$qt5_libs" = "xyes" ; then
     AC_MSG_RESULT([found])
-    AC_MSG_CHECKING([for Qt >= 5.2])
+    AC_MSG_CHECKING([for Qt5 >= 5.2])
     FC_QT52_CHECK
   fi
 
@@ -156,9 +156,10 @@ AC_DEFUN([FC_QT5_LINKTEST],
 
 dnl If $1 is Qt 5's moc command then $2 else $3
 AC_DEFUN([FC_QT5_IF_QT5_MOC],
-  AS_IF([test "`$1 -v 2<&1 | grep -o 'Qt [[[0-9]]]\+'`" = "Qt 5" ||
-         test "`$1 -v 2<&1 | grep -o 'moc [[[0-9]]]\+'`" = "moc 5" ||
-         test "`$1 -v 2<&1 | grep -o 'moc-qt[[[0-9]]]\+'`" = "moc-qt5"],
+  AS_IF([$1 -v >/dev/null 2>/dev/null &&
+         (test "`$1 -v 2<&1 | grep -o 'Qt [[[0-9]]]\+'`" = "Qt 5" ||
+          test "`$1 -v 2<&1 | grep -o 'moc [[[0-9]]]\+'`" = "moc 5" ||
+          test "`$1 -v 2<&1 | grep -o 'moc-qt[[[0-9]]]\+'`" = "moc-qt5")],
     [$2], [$3]))
 
 dnl Set MOCCMD to $1 if it is the Qt 5 "moc". If not run $2 parameter.

@@ -1,4 +1,4 @@
-/********************************************************************** 
+/***********************************************************************
  Freeciv - Copyright (C) 1996 - A Kjeldberg, L Gregersen, P Unold
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@ extern "C" {
 /* gen_headers */
 #include "freeciv_config.h"
 
-/* map symbolic Winsock error names to symbolic errno names */
+/* Map symbolic Winsock error names to symbolic errno names.
+ * Update also set_socket_errno() when changing this. */
 #ifdef FREECIV_HAVE_WINSOCK
 #undef EINTR
 #undef EINPROGRESS
@@ -36,6 +37,7 @@ extern "C" {
 #undef EADDRNOTAVAIL
 #undef ETIMEDOUT
 #undef ECONNABORTED
+#undef ENOTSOCK
 #define EINTR         WSAEINTR
 #define EINPROGRESS   WSAEWOULDBLOCK
 #define EWOULDBLOCK   WSAEWOULDBLOCK
@@ -44,6 +46,7 @@ extern "C" {
 #define EADDRNOTAVAIL WSAEADDRNOTAVAIL
 #define ETIMEDOUT     WSAETIMEDOUT
 #define ECONNABORTED  WSAECONNABORTED
+#define ENOTSOCK      WSAENOTSOCK
 #endif /* FREECIV_HAVE_WINSOCK */
 
 /* Which protocol will be used for LAN announcements */

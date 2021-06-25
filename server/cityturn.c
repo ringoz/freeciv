@@ -301,24 +301,29 @@ void auto_arrange_workers(struct city *pcity)
 {
   struct cm_parameter cmp;
   struct cm_result *cmr;
+  bool broadcast_needed;
 
   /* See comment in freeze_workers(): we can't rearrange while
    * workers are frozen (i.e. multiple updates need to be done). */
   if (pcity->server.workers_frozen > 0) {
-    pcity->server.needs_arrange = TRUE;
+    if (pcity->server.needs_arrange == CNA_NOT) {
+      pcity->server.needs_arrange = CNA_NORMAL;
+    }
     return;
   }
   TIMING_LOG(AIT_CITIZEN_ARRANGE, TIMER_START);
+
+  broadcast_needed = (pcity->server.needs_arrange == CNA_BROADCAST_PENDING);
 
   /* Freeze the workers and make sure all the tiles around the city
    * are up to date.  Then thaw, but hackishly make sure that thaw
    * doesn't call us recursively, which would waste time. */
   city_freeze_workers(pcity);
-  pcity->server.needs_arrange = FALSE;
+  pcity->server.needs_arrange = CNA_NOT;
 
   city_map_update_all(pcity);
 
-  pcity->server.needs_arrange = FALSE;
+  pcity->server.needs_arrange = CNA_NOT;
   city_thaw_workers(pcity);
 
   /* Now start actually rearranging. */
@@ -415,6 +420,10 @@ void auto_arrange_workers(struct city *pcity)
      * by trying to arrange workers more. */
   }
   sanity_check_city(pcity);
+
+  if (broadcast_needed) {
+    broadcast_city_info(pcity);
+  }
 
   cm_result_destroy(cmr);
   TIMING_LOG(AIT_CITIZEN_ARRANGE, TIMER_STOP);
@@ -1868,14 +1877,10 @@ static bool worklist_change_build_target(struct player *pplayer,
 	} requirement_vector_iterate_end;
 
 	if (!known) {
-	  /* This shouldn't happen...
-	     FIXME: make can_city_build_improvement_now() return a reason enum. */
-          notify_player(pplayer, city_tile(pcity),
-                        E_CITY_CANTBUILD, ftc_server,
-                        _("%s can't build %s from the worklist; "
-                          "reason unknown! Postponing..."),
-                        city_link(pcity),
-                        city_improvement_name_translation(pcity, ptarget));
+          /* FIXME: make can_city_build_improvement_now() return a reason enum,
+           *        so we can notify user with it.
+           *        Likely the building already exist. */
+          purge = TRUE;
 	}
       } else if (success) {
 	/* Hey, we can upgrade the improvement! */
@@ -3025,7 +3030,11 @@ static void update_city_activity(struct city *pcity)
         notify_player(pplayer, city_tile(pcity), E_CITY_PLAGUE, ftc_server,
                       _("%s has been struck by a plague! Population lost!"), 
                       city_link(pcity));
-        city_reduce_size(pcity, 1, NULL, "plague");
+        if (!city_reduce_size(pcity, 1, NULL, "plague")) {
+          /* City destroyed completely. */
+          return;
+        }
+
         pcity->turn_plague = game.info.turn;
 
         /* recalculate illness */
