@@ -1514,7 +1514,9 @@ void init_nls(void)
   setup_langname(); /* Makes sure LANG env variable has been set */
 #endif /* WIN32_NATIVE */
 
+#ifndef NANOCIV
   (void) setlocale(LC_ALL, "");
+#endif
   (void) bindtextdomain(PACKAGE, get_locale_dir());
   (void) textdomain(PACKAGE);
 
