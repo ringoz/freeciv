@@ -34,6 +34,9 @@ GUI_FUNC_PROTO(void, canvas_set_zoom, struct canvas *store, float zoom)
 GUI_FUNC_PROTO(bool, has_zoom_support, void)
 
 GUI_FUNC_PROTO(void, canvas_mapview_init, struct canvas *store);
+#ifdef NANOCIV
+GUI_FUNC_PROTO(void, canvas_set_clip, struct canvas *pcanvas, int canvas_x, int canvas_y, int width, int height)
+#endif
 
 /* Drawing functions */
 GUI_FUNC_PROTO(void, canvas_copy, struct canvas *dest, struct canvas *src,

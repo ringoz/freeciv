@@ -1704,13 +1704,15 @@ void update_map_canvas(int canvas_x, int canvas_y, int width, int height)
    * However if a partial redraw is done we draw everything onto the
    * tmp_canvas then copy *just* the area of update onto the canvas. */
   if (!full) {
+#ifdef NANOCIV
+    canvas_set_clip(mapview.store, canvas_x, canvas_y, width, height);
+#else
     /* Swap store and tmp_store. */
     tmp = mapview.store;
     mapview.store = mapview.tmp_store;
     mapview.tmp_store = tmp;
+#endif
   }
-
-  canvas_mapview_init(mapview.store); // NANOCIV optimization
 
   /* Clear the area.  This is necessary since some parts of the rectangle
    * may not actually have any tiles drawn on them.  This will happen when
@@ -1774,6 +1776,9 @@ void update_map_canvas(int canvas_x, int canvas_y, int width, int height)
   } gui_rect_iterate_end;
 
   if (!full) {
+#ifdef NANOCIV
+    canvas_set_clip(mapview.store, 0, 0, 0, 0);
+#else
     /* Swap store and tmp_store back. */
     tmp = mapview.store;
     mapview.store = mapview.tmp_store;
@@ -1782,6 +1787,7 @@ void update_map_canvas(int canvas_x, int canvas_y, int width, int height)
     /* And copy store to tmp_store. */
     canvas_copy(mapview.store, mapview.tmp_store,
 		canvas_x, canvas_y, canvas_x, canvas_y, width, height);
+#endif
   }
 
   dirty_rect(canvas_x, canvas_y, width, height);
