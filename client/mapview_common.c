@@ -3623,7 +3623,8 @@ bool map_canvas_resized(int width, int height)
                          0, 0, full_width / map_zoom, full_height / map_zoom);
 
 #ifdef NANOCIV
-    mapview.tmp_store = canvas_create(tileset_tile_width(tileset), tileset_tile_height(tileset));
+    mapview.tmp_store = canvas_create(MAX(tileset_tile_width(tileset),  tileset_unit_width(tileset)), 
+                                      MAX(tileset_tile_height(tileset), tileset_unit_height(tileset)));
 #else
     mapview.tmp_store = canvas_create(full_width, full_height);
 #endif
