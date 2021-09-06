@@ -2606,7 +2606,11 @@ void decrease_unit_hp_smooth(struct unit *punit0, int hp0,
       refresh_unit_mapcanvas(losing_unit, unit_tile(losing_unit), FALSE, FALSE);
       unqueue_mapview_updates(FALSE);
       canvas_copy(mapview.tmp_store, mapview.store,
+#ifdef NANOCIV
+                  canvas_x, canvas_y, 0, 0,
+#else
                   canvas_x, canvas_y, canvas_x, canvas_y,
+#endif
                   tileset_tile_width(tileset) * map_zoom,
                   tileset_tile_height(tileset) * map_zoom);
 
@@ -2622,7 +2626,11 @@ void decrease_unit_hp_smooth(struct unit *punit0, int hp0,
          * complete thing onto the map canvas window. This avoids
          * flickering. */
         canvas_copy(mapview.store, mapview.tmp_store,
+#ifdef NANOCIV
+                    0, 0, canvas_x, canvas_y,
+#else
                     canvas_x, canvas_y, canvas_x, canvas_y,
+#endif
                     tileset_tile_width(tileset) * map_zoom,
                     tileset_tile_height(tileset) * map_zoom);
         canvas_put_sprite_full(mapview.store,
@@ -2729,7 +2737,11 @@ void move_unit_map_canvas(struct unit *punit,
         if (new_x != prev_x || new_y != prev_y) {
           /* Backup the canvas store to the temp store. */
           canvas_copy(mapview.tmp_store, mapview.store,
+#ifdef NANOCIV
+                      new_x, new_y, 0, 0,
+#else
                       new_x, new_y, new_x, new_y,
+#endif                      
                       tuw, tuh);
 
           /* Draw */
@@ -2742,7 +2754,11 @@ void move_unit_map_canvas(struct unit *punit,
 
           /* Restore the backup.  It won't take effect until the next flush. */
           canvas_copy(mapview.store, mapview.tmp_store,
+#ifdef NANOCIV
+                      0, 0, new_x, new_y,
+#else
                       new_x, new_y, new_x, new_y,
+#endif                      
                       tuw, tuh);
           dirty_rect(new_x, new_y, tuw, tuh);
 
@@ -3606,7 +3622,11 @@ bool map_canvas_resized(int width, int height)
                          get_color(tileset, COLOR_MAPVIEW_UNKNOWN),
                          0, 0, full_width / map_zoom, full_height / map_zoom);
 
+#ifdef NANOCIV
+    mapview.tmp_store = canvas_create(tileset_tile_width(tileset), tileset_tile_height(tileset));
+#else
     mapview.tmp_store = canvas_create(full_width, full_height);
+#endif
     canvas_set_zoom(mapview.tmp_store, map_zoom);
     canvas_mapview_init(mapview.tmp_store);
   }
