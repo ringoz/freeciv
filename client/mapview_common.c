@@ -866,8 +866,12 @@ static void base_set_mapview_origin(float gui_x0, float gui_y0)
     /* Do a partial redraw only.  This means the area of overlap (a
      * rectangle) is copied.  Then the remaining areas (two rectangles)
      * are updated through update_map_canvas. */
+#ifdef NANOCIV
+    struct canvas *target = mapview.store;
+#else
     struct canvas *target = mapview.tmp_store;
     canvas_mapview_init(target); // NANOCIV optimization
+#endif
 
     if (old_gui_x0 < gui_x0) {
       update_x0 = MAX(old_gui_x0 + width, gui_x0);
@@ -885,6 +889,9 @@ static void base_set_mapview_origin(float gui_x0, float gui_y0)
     }
 
     dirty_all();
+#ifdef NANOCIV
+    canvas_move(target, old_gui_x0 - gui_x0, old_gui_y0 - gui_y0);
+#else
     canvas_copy(target, mapview.store,
 		common_x0 - old_gui_x0,
 		common_y0 - old_gui_y0,
@@ -892,6 +899,7 @@ static void base_set_mapview_origin(float gui_x0, float gui_y0)
 		common_x1 - common_x0, common_y1 - common_y0);
     mapview.tmp_store = mapview.store;
     mapview.store = target;
+#endif
 
     if (update_y1 > update_y0) {
       update_map_canvas(0, update_y0 - gui_y0,
