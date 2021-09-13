@@ -50,7 +50,7 @@
 #define BINDIR                "."
 #define DEFAULT_DATA_PATH     "assets;."
 #define DEFAULT_SAVE_PATH     "~/.freeciv/saves"
-#define DEFAULT_SCENARIO_PATH "./scenarios"
+#define DEFAULT_SCENARIO_PATH "assets/scenarios;./scenarios"
 
 /* Extra debugging support, backward compatibility macro */
 /* #undef DEBUG */

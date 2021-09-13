@@ -27,7 +27,6 @@ set(FC_DATA_FILES
     nation/
     override/
     sandbox/
-    scenarios/
     stub/
     trident/
     wonders/
