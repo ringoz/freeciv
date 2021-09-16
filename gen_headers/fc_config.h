@@ -688,13 +688,13 @@ const char *osGetLocale(void);
 
 
 /* Version number of package */
-#define VERSION "2.6.3"
+#define VERSION "2.6.5"
 
 /* Version label */
 #define VERSION_LABEL "+"
 
 /* Version string */
-#define VERSION_STRING "2.6.3"
+#define VERSION_STRING "2.6.5"
 
 /* Informational URL */
 #define WIKI_URL "http://www.freeciv.org/"
