@@ -659,6 +659,9 @@ bool can_extras_coexist(const struct extra_type *pextra1,
     return TRUE;
   }
 
+  if (!pextra1 || !pextra2)
+    return FALSE;
+
   return !BV_ISSET(pextra1->conflicts, extra_index(pextra2));
 }
 
