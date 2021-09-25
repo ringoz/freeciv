@@ -18,7 +18,6 @@ set(FC_DATA_FILES
     classic/
     default/
     flags/
-    fonts/
     hex2t/
     hexemplio/
     icons/
