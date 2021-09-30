@@ -48,7 +48,7 @@
 
 #endif /* FC__LIBLUA_CONFIG_H */
 
-#include <nanociv.h>
+#include "nanociv.h"
 #define _DARWIN_C_SOURCE
 #define LUA_USE_C89 1
 #define lua_getlocaledecpoint()		('.')

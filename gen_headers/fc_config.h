@@ -753,5 +753,5 @@ const char *osGetLocale(void);
 #define PATH_SEPARATOR ";"
 #define DIR_SEPARATOR "/"
 #define DIR_SEPARATOR_CHAR '/'
-#include <nanociv.h>
+#include "nanociv.h"
 #define _DARWIN_C_SOURCE
