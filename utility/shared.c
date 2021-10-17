@@ -676,7 +676,7 @@ bool str_to_float(const char *str, float *pfloat)
 char *user_home_dir(void)
 {
 #ifdef NANOCIV
-  return "/data";
+  return "~";
 #endif
 #ifdef AMIGA
   return "PROGDIR:";
