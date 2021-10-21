@@ -40,7 +40,7 @@
 #include "support.h"
 
 static bool is_init = FALSE;
-static char convert_buffer[4096];
+NANOCIV_TLS static char convert_buffer[4096];
 static const char *transliteration_string;
 
 #ifdef HAVE_ICONV
@@ -338,7 +338,7 @@ void fc_fprintf(FILE *stream, const char *format, ...)
   va_list ap;
   char string[4096];
   const char *output;
-  static bool recursion = FALSE;
+  NANOCIV_TLS static bool recursion = FALSE;
 
   /* The recursion variable is used to prevent a recursive loop.  If
    * an iconv conversion fails, then log_* will be called and an

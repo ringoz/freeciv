@@ -1205,7 +1205,7 @@ char fc_tolower(char c)
 *****************************************************************/
 const char *fc_basename(const char *path)
 {
-  static char buf[2048];
+  NANOCIV_TLS static char buf[2048];
 
   /* Copy const parameter string to buffer that basename() can
    * modify */

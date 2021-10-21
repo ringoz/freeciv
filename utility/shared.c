@@ -102,9 +102,9 @@ static char *grouping_sep = NULL;
 static const char base64url[] =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-static struct strvec *data_dir_names = NULL;
-static struct strvec *save_dir_names = NULL;
-static struct strvec *scenario_dir_names = NULL;
+NANOCIV_TLS static struct strvec *data_dir_names = NULL;
+NANOCIV_TLS static struct strvec *save_dir_names = NULL;
+NANOCIV_TLS static struct strvec *scenario_dir_names = NULL;
 
 static char *mc_group = NULL;
 static char *home_dir = NULL;
