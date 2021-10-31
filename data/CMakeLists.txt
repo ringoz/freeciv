@@ -2,7 +2,7 @@
 # Nanociv - Copyright (C) 2020 - Vladimir Davidovich
 ########################################################################
 
-set(FC_DATA_FILES
+add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR} 
     amplio2.tilespec
     classic.serv
     default.serv
@@ -30,11 +30,3 @@ set(FC_DATA_FILES
     trident/
     wonders/
   )
-
-add_custom_command(
-    COMMAND ${ZIPTOOL_EXECUTABLE} -c "${CMAKE_CURRENT_BINARY_DIR}/fc_data.czar" ${FC_DATA_FILES}
-    OUTPUT  "fc_data.czar"
-    DEPENDS ${FC_DATA_FILES}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-add_custom_target(fc_data DEPENDS "fc_data.czar")
