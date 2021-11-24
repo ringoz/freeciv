@@ -3,6 +3,7 @@
 ########################################################################
 
 add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR} 
+  INCLUDES
     amplio2.tilespec
     classic.serv
     default.serv
@@ -29,4 +30,7 @@ add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR}
     stub/
     trident/
     wonders/
+  EXCLUDES
+    Makefile.am
+    *.svg
   )
