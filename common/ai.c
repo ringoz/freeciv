@@ -45,7 +45,7 @@ NANOCIV_TLS static struct ai_timer *aitimers = NULL;
 NANOCIV_TLS static struct ai_timer *aitimer_plrs = NULL;
 
 /*****************************************************************************
-  Allocate memory for Start the timer for the AI of a player.
+  Allocate resources for the AI timers.
 *****************************************************************************/
 void ai_timer_init(void)
 {

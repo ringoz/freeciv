@@ -1,3 +1,1154 @@
+commit 172ddf4d4112bc582511adb9890ce1ce50e936ae
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 10 12:08:19 2021 +0200
+
+    Set version number to 2.6.6
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 720c934457ea54d0553134970fb11672e39792a9
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 10 12:05:58 2021 +0200
+
+    FAQ: Update latest stable version number to 2.6.6
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit bd5c84d6d950653a7dbedc7787c13664c9dedaf1
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 10 12:04:41 2021 +0200
+
+    'make update-po' before 2.6.6 release
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit eac2ac2c4564447ce1a8ab589ad6b9d45760ed7e
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 10 12:01:36 2021 +0200
+
+    NEWS-2.6: Fix a typo
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 2702b8848078a297eea079743fdbd3ccb8cfb94d
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 10 00:07:11 2021 +0200
+
+    NEWS-2.6: Refresh 2.6.6 translation statistics
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 21e304b5accb26686127f0d134f1f2955c504987
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Dec 8 23:23:54 2021 +0200
+
+    Update Spanish translation
+    
+    Translation by Jordi Negrevernis i Font
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 3424ff7ec8c6b5be97367aaee78d934af18d90ac
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Dec 6 03:22:54 2021 +0200
+
+    NEWS-2.6: Add 2.6.6 translation statistics
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 11256949214c66fc636cacd5329c49701d892a91
+Author: Konstantin Vedeneev <konved@gmail.com>
+Date:   Mon Dec 6 06:15:06 2021 +0500
+
+    Update for Russian translation.
+
+commit c354659393053ce13045a36e6a8d4796a1944288
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Dec 4 21:27:19 2021 +0200
+
+    Update Spanish translation
+    
+    Translation by Jordi Negrevernis i Font
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit f0a77011833faea798f46a3221d4a40d382bfa22
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Dec 4 06:50:52 2021 +0200
+
+    NEWS-2.6: Add 2.6.6 changes
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit e060c8d19c8c4774ff3d20597a6d338d638d5d9d
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Dec 4 06:00:29 2021 +0200
+
+    Update Polish translation by Hubert Kowalewski.
+    
+    Pulled from https://sourceforge.net/projects/freeciv-l10n-pl/files/
+    (zip timestamp 2021-12-02).
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 3b1dd23723f86d66eeae1facacf25233f279420a
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Dec 3 08:53:54 2021 +0200
+
+    Comment typofix: "argumen" -> "argument"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 17fff744bb78b06486305a5391639072b5992158
+Author: kijima <norimaking777@gmail.com>
+Date:   Tue Nov 30 07:06:05 2021 +0900
+
+    Fix comment typo "accross" -> "across"
+    
+    See osdn #43296
+
+commit e0d108d981e20be40392f0ce9d2b2514bdef13bb
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Nov 25 15:59:20 2021 +0200
+
+    Fix erroneous message about obsolete build target after it has been updated
+    
+    Reported and original patch by Ilkka Virta
+    
+    See hrm Bug #921933
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 13205c2efdd8f4bf26b85fa70ce1a6dd9c095a15
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Nov 22 17:25:53 2021 +0200
+
+    gtk: Correct popup_musicset_suggestion_dialog() comment speaking of soundset
+    
+    See osdn #43213
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 348ccfe4bb2376c254761b2437b16764c1f9c31c
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Nov 19 17:15:13 2021 +0200
+
+    gtk: Unref ref protecting widgets from destruction in editinfobox_refresh()
+    
+    See osdn #43222
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 019698be471fff142c4560838e106ff2f0099da4
+Author: Ihnatus <ignatus31oct@mail.ru>
+Date:   Thu Nov 25 18:52:02 2021 +0200
+
+    Lua: correct players_iterate() after a player was removed
+    
+    See hrm Bug #883551
+    
+    Signed-off-by: Ihnatus <ignatus31oct@mail.ru>
+
+commit 8747e605b2b133ea27c4a41de68828591e357836
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Nov 26 14:40:30 2021 +0200
+
+    Nations domain po-files: Correct typo in Marathi legend msg id
+    
+    Change msg id directly in the po-files, so that completely valid
+    translations will not turn to fuzzy ones as a result of the fixed typo.
+    
+    See osdn #42609
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit fb3f77010b4cf1d70dbaeac12cf963668bf4b8d8
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Nov 15 00:32:19 2021 +0200
+
+    Fix Marathi legend typo
+    
+    See osdn #42609
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 1e65247a4835e849542a4a1429dae104ea36e918
+Author: igx31 <32019629+igx31@users.noreply.github.com>
+Date:   Fri Nov 26 00:40:49 2021 +0100
+
+    Updated French translations
+
+commit 679c77e823cdd1c4d9fca4ed2dd12e120392d854
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Nov 13 10:09:31 2021 +0200
+
+    Make shield_stock given in editor to stick over production change
+    
+    Changing the production back and forth was causing the stock to
+    get to the value it had before editing, not to the value it
+    had after the editing (but before it was changed the first time)
+    
+    Reported by ihnatus
+    
+    See osdn #42685
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 30b7f87aefdeb8fbdd371f6b641a6e163a1121f3
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Nov 14 02:33:51 2021 +0200
+
+    fcmp gtk: Free main window when quitting
+    
+    See osdn #43074
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4e854abbc57c2e98e03cd8cdc81f6531b939ae75
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Nov 8 01:12:37 2021 +0200
+
+    Consider it land bombardment when a ship attacks from a city to land
+    
+    Reported by log65536
+    
+    See osdn #42960
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit e037a297fc59a59741891c0f8d5552257de704cc
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Nov 22 05:54:52 2021 +0200
+
+    Update Finnish translation
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 322de40680939f7097286640a7fcb05c534f611f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Sep 22 06:01:31 2021 +0300
+
+    Qt plr_report::update_report(): Update number of rows as the first action
+    
+    Make sure the number of rows is correct, for example after civil war,
+    before we may trigger automatic sorting of the model.
+    
+    Reported by chippo
+    
+    See osdn #42545
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 8d9a525954a90c94adb4daac90908c37fefb49ab
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Nov 20 12:38:53 2021 +0200
+
+    Comment typofix: "cavas" -> "canvas"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 0f9f3b603b26dffc6c52ee811475beb2d43bbb87
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Nov 8 01:18:55 2021 +0200
+
+    README.packaging: List 'various tools' as libfreeciv users
+    
+    See osdn #42925
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 018375f8c48a3b870cc1cfc7ae4ad7bcb497e146
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Nov 11 04:15:35 2021 +0200
+
+    Make GAMEOVER autosave in the end of all-AI autogame
+    
+    Reported by alain_bkr
+    
+    See osdn #42172
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit d05759d87e883c226a6d1c685d8537b38cc36693
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Nov 3 01:28:59 2021 +0200
+
+    civ1: Drop DamageSlows flag from all unit classes
+    
+    As civ1 units are either in full health or dead, there is no
+    point in having DamageSlows flag for any of them.
+    
+    Reported by nef
+    
+    See osdn #43040
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 6a82ea7827972617010f25ffcdc15588f1772d81
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Nov 10 16:11:49 2021 +0200
+
+    fcmp gtk3/2: Quit by exiting gtk main loop
+    
+    Return cleanly out of main loop and via the end of main() function.
+    It used to exit() from inside the main loop.
+    
+    See osdn #43187
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 7c55fd79bc8934b4a55c9cd0ebd19dc41240cf44
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Nov 3 07:44:18 2021 +0200
+
+    Correct iterate_effect_cache() function header
+    
+    See osdn #43087
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit f5a6ac9d48d69ceb3b4110635f09274d6f591e79
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Nov 11 07:51:51 2021 +0200
+
+    Comment typofix: "checvk" -> "check"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 29b9664d143c11f9178d17a1d7f96b034a5189e8
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 30 14:41:44 2021 +0300
+
+    Qt: Allow adjusting leader of the nation player has already selected
+    
+    In the pregame nation selection it was impossible to reselect
+    the same nation one had already.
+    
+    See osdn #43024
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 9c4dff723c455e89f1084feafa369ac0c8693902
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Oct 20 05:22:13 2021 +0300
+
+    civ1: Remove infra from city center tile when city destroyed
+    
+    Based on lua script by nef
+    
+    Requested by nef
+    
+    See osdn #43039
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 746e6baf41b02dcdaa7cc83d3318cce1b54cd5cf
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Nov 6 21:53:32 2021 +0200
+
+    Comment typofix: "tookit" -> "toolkit"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit b7c0e692866f0ec91d9b04e6e6c090f7a2a8bb28
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 23 05:19:38 2021 +0300
+
+    sdl/2: Correct popup_unit_info() function header
+    
+    See osdn #42568
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 8e2b968e7da9197aafff7fc742efb965845d91c2
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Oct 17 16:31:52 2021 +0300
+
+    Add -Wimplicit-fallthrough to --enable-debug=checks
+    
+    See hrm Feature #852929
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 564b0da5676d86eb47256abd5b98d5e2c156170f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Oct 20 19:38:57 2021 +0300
+
+    Tell which building was the problematic one in ruleset sanity checks
+    
+    See osdn #42995
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 020dd4f70107c95ceba2d1c121e5a1bd804963f3
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Oct 19 05:58:27 2021 +0300
+
+    gtk: Destroy toplevel window on quit
+    
+    See osdn #43072
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 628404ba4a8da9f449792d55d982c8795a5b0455
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 16 02:58:28 2021 +0300
+
+    Remove mentions of ancient 'gui-mui' from comments
+    
+    See osdn #42931
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 71cf3329a116f4ab2e68b081e4efcce9deeafb67
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Oct 10 22:36:58 2021 +0300
+
+    Qt: Do not ignore sex user has explicitly selected for leader
+    
+    Toggling leader sex did not have any effect, sex was selected only
+    when one took predefined leader from the list.
+    
+    See osdn #42964
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 94ed682c9aa1278a4ab5a00fb2bcde6b3fa3ab03
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Oct 19 19:06:36 2021 +0300
+
+    gtk: Drop obsolete toplevel_accel reference
+    
+    See osdn #43076
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 61c74805549078fa61a83b955161fe8cd47622f3
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Oct 13 23:40:47 2021 +0300
+
+    Civ1: Make all units to occupy tiles
+    
+    Reported by nef
+    
+    See osdn #42923
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit c4cce9d736d9b9268c29bc561b73f4098d3219c3
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Oct 10 03:20:01 2021 +0300
+
+    Correct dai_gov_value() comment
+    
+    The comment spoke of Tech instead of Government.
+    
+    See osdn #42867
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 6ac0f3cf403a3a77f0078a0d56e5d02e491c3312
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 9 21:24:13 2021 +0300
+
+    Sanity check that wonder upkeep is zero
+    
+    Reported by Lexxie
+    
+    See osdn #42994
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit c5f6123d3ddc490f402a015c8c3fc872e119c868
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Oct 10 08:16:42 2021 +0300
+
+    Qt: Fix segfault when quitting from main menu without visiting game
+    
+    Writing shortcuts crashed if attempted before they had been even
+    initialized. Now check if they are initialized, and don't even try
+    to write them if they are not.
+    
+    See osdn #43019
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 018816442cb5200ae3b9ac8f60103cc377c2ee1d
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 9 14:06:44 2021 +0300
+
+    Multiplayer: Remove broken link from a buildings.ruleset comment
+    
+    It was pointing to old freeciv forums no longer existing.
+    
+    See osdn #42839
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 34dffab2f91dc134497fb43aecefb412cdd40720
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 2 06:34:31 2021 +0300
+
+    cma_get_parameter(): Check attribute format version, don't assert() it
+    
+    See osdn #42898
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 7c29e054f753bb00fbcd87599449bb4c1937fe78
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 2 15:13:03 2021 +0300
+
+    Fix revealing trade partner to destination owner when trade route established
+    
+    If the owner of the destination city already knew the tile where
+    the source city is, but only from time before the city was founded,
+    the source city was not revealed.
+    This even lead to client crashes as traderoutes there were between
+    owned city and NULL.
+    
+    See osdn #42968
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 3f13c38fdfe12df4e167552d745438a4f3df2dd6
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Oct 9 13:51:06 2021 +0300
+
+    Alien: Mark upkeep cost of wonders as zero
+    
+    The engine forces upkeep for wonders to be zero, so value in
+    the ruleset is not used. Mark the ruleset value as zero to
+    avoid confusion, and also failing sanity checks once they
+    get implemented.
+    
+    See osdn #43002
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 63ba17c938127339f9cea4d54ce3d2d79d7e2500
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Oct 1 02:13:33 2021 +0300
+
+    Qt: Show default ruler title for a player whose government is not known
+    
+    Intelligence was showing ruler title as if the nation was in Anarchy when
+    it doesn't know player's actual government. Make it to show default
+    "Mr"/"Ms" instead in that case.
+    
+    See osdn #42938
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 278402133d7a461790b8e1b5dc243c5858688486
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 27 04:08:19 2021 +0300
+
+    Make it possible to use iterate_outward() recursively
+    
+    See osdn #42930
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 56cc8502f99d812fc5202ced0f036b4dd71e86cc
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Oct 10 03:49:42 2021 +0300
+
+    Comment typofix: "muicset" -> "musicset"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 3a870cd3b8d41c49fdd5315a39bf9eef76ee605b
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 27 19:22:10 2021 +0300
+
+    Qt: Correctly send the sex user selected in nation selection request
+    
+    See osdn #42936
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit f13d17d2812d2b134ea8b703407a75b653489f62
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Sep 26 21:11:57 2021 +0300
+
+    configure.ac: Improve malloc(0) test output
+    
+    See osdn #41100
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4afd155dcd64ac3c3c93add4e2f749548966f560
+Author: Joan Creus <joan.creusandreu@gmail.com>
+Date:   Fri Oct 8 12:37:23 2021 +0200
+
+    Updating Catalan translation
+
+commit 6f7b84237368d0af3305e1531f557f15ac1d139b
+Author: Konstantin Vedeneev <konved@gmail.com>
+Date:   Fri Oct 8 02:26:27 2021 +0500
+
+    Update for Russian translation.
+
+commit 852dbd0ecebedb34a4417b0b131adecd29833c8f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Sep 23 05:45:01 2021 +0300
+
+    advance_index_iterate(): Move advance_count() call outside the loop
+    
+    See osdn #42883
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 9f09de91f4354834ea81929388516fe656066d75
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 20 04:01:09 2021 +0300
+
+    ruledit/Makefile.am: List MOC_FILES in alphabetical order
+    
+    See osdn #42886
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit c5bc7e13ae3e278aca4d519eed8e70f9b2d111f1
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Sep 26 04:09:36 2021 +0300
+
+    README.packaging: Fix typo "not resources" -> "no resources"
+    
+    See osdn #42926
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 7e1ea2d2e4ac736864d2379c68d845d4ad7fbcb7
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Sep 22 00:03:31 2021 +0300
+
+    Allow moving unit with Trireme flag to ocean city, or city in 1x1 island
+    
+    Reported by lexxie9952
+    
+    See osdn #42600
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit cf9fc55a12ec4933a5b560cbca91287831946878
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 28 06:36:10 2021 +0300
+
+    Comment typofix: "rule title" -> "ruler title"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 840581139aedf83592e23673709338c2c56f18f2
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 28 03:09:52 2021 +0300
+
+    Merge Esperanto translation of freeciv domain from master
+    
+    Translation updates to master by KristjanESPERANTO
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 27b117810bb53e584eac0995486d210808e6eaa9
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 28 02:09:30 2021 +0300
+
+    Update Finnish translation
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 93b02947d1c49c083f83c65e6892e6cb5be2ac56
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Sep 26 06:42:57 2021 +0300
+
+    Revert "Makerules.mk: Make moc rule to respect automake's silent mode"
+    
+    This reverts commit bec6fb57f6d139b01fd64b6293162dd7ecf8e194.
+    
+    It caused build to fail with automake < 1.12.2, and our minimum
+    supported automake version in S2_6 is 1.10.
+    
+    See osdn #42927
+
+commit f24dd93d5a04600326d99bee5c13655c461cb3fe
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 27 20:26:05 2021 +0300
+
+    Merge Esperanto translation of nations domain from master
+    
+    Translation updates to master by KristjanESPERANTO
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 798a8a01453ffd8feb828c0d9bc11fa78f1af17b
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 21 23:30:48 2021 +0300
+
+    helpdata.txt: Make clear that traderoute's initial income depends on ruleset
+    
+    Reported by ihnatus
+    
+    See osdn #42652
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 277a7d6d9233cdf97c426ea1f3a4a893c63a466a
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 27 12:57:20 2021 +0300
+
+    Merge Esperanto translation of ruledit domain from master
+    
+    Translation updates to master by KristjanESPERANTO
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4d05506f791ba37c0b6dec8e376fe885b3408000
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 21 04:01:40 2021 +0300
+
+    Macrofy client_player()
+    
+    See osdn #42865
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 64870760a5654320434c025c93b7004a49ab1f0f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Sep 25 17:31:29 2021 +0300
+
+    nations/fi.po: Update version information
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 487284216b72b33b3e55900c5d1e5bef69b38176
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Sep 25 17:28:24 2021 +0300
+
+    fi.po: Replace gna.org email with freelists.org one
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 6ec5f027abf3b622449a912069a1d06f3ae2c5e1
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Sep 24 19:16:59 2021 +0300
+
+    Update Finnish translation
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 6217b466c2eef55229d20e0139745f5ddb8998e4
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Sep 24 16:33:00 2021 +0300
+
+    POTFILES.in: Update filename of the italy scenario
+    
+    See osdn #42908
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 38b5fcc500069d2e70f6dc29fb32ff536a961bd8
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Sep 20 01:37:57 2021 +0300
+
+    debug.m4: Disable array-bounds warnings when -Werror present
+    
+    See osdn #42885
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4417c28ef3b7c87bb401f10e0236461aa63700ba
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Sep 18 03:26:23 2021 +0300
+
+    Send city owner's, not caravan owner's, info when caravan helps finish wonder
+    
+    Reported by Ilkka Virta
+    
+    See hrm Feature #908746
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit a9170c532aedf4e992d3c867aa96e4bcab5e3225
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Sep 17 00:42:45 2021 +0300
+
+    fc_cmdhelp.c: Drop "version.h" include
+    
+    See osdn #42868
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4d176773d4b3848f9edd1a045c52a7debc3fcef9
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Sep 16 04:15:45 2021 +0300
+
+    nations.ruleset: Set case of embedded_nations entries to match nation name
+    
+    The comparison is case insensitive so the all-lowercase entries have worked,
+    but they are confusing as they appear different from nation rule_names
+    from individual nations and more like file name.
+    
+    Base on report by ddeanbrown
+    
+    See osdn #42695
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 586a4879cbf7cb9c1abc976363c2f29f110aa8eb
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Sep 21 00:05:18 2021 +0300
+
+    Comment typofix: "it's" -> "its"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 9b3e451bed4f7085a65955e1fbdfb94fa4aff3c5
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Sep 16 15:59:21 2021 +0300
+
+    italy.sav: Wrap map from the correct point
+    
+    In the italy scanario leftmost bulge of Italy was placed left of map origo,
+    to the right side of the map. The map is not a wrapping one, so the parts
+    were not connected at all.
+    
+    Scenario file rework by Jacob Nevins
+    
+    See hrm Bug #691812
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit cafc643f576745491ab3ff946adbd065c814fe6c
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Sep 12 12:19:31 2021 +0300
+
+    Set attribute __format__(__printf__ ...) for do_log_deprecation()
+    
+    See osdn #42841
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit afcb3a568fc81126c31e1710be2e93b50a4cad39
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat Sep 11 09:22:17 2021 +0300
+
+    README: Document freeciv-tickets mailing list
+    
+    See osdn #42491
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit ea90bfb3f4765d2aee2f17ef60f51a9a9d93bcde
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Sep 10 16:58:10 2021 +0300
+
+    README.effects: Document TerrainAlter requirement values
+    
+    See osdn #42844
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 55105ebc7d867ccf1032a661492c043d54be67c5
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Sep 10 07:34:44 2021 +0300
+
+    INSTALL: Remove extraneous word
+    
+    See osdn #42842
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4f511c2b127c2941745cc48f14bfca857cdd3a18
+Author: Ihnatus <ignatus31oct@mail.ru>
+Date:   Wed Sep 8 03:50:46 2021 +0300
+
+    AI: don't consider caravan bonus doubled when it is not
+    
+    See osdn #42641
+
+commit 8409bdee6a8affc4d1f43c3c38f1e128db6f9e5c
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Aug 31 04:58:06 2021 +0300
+
+    Replace uses of deprecated 'which' command with 'command -v'
+    
+    See osdn #42769
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4423fb6496561238689203ebf44987f280d5c831
+Author: Ihnatus <ignatus31oct@mail.ru>
+Date:   Sun Jul 18 19:57:14 2021 +0300
+
+    AI: Manage caravans that only can enter marketplaces
+    
+    See osdn #42518
+    
+    Signed-off-by: Ihnatus <ignatus31oct@mail.ru>
+
+commit a34a29ad8e6f0160fe466e36ac050be97a8f4244
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Aug 31 19:19:57 2021 +0300
+
+    sdl2.m4: Port upstream serial 2 changes
+    
+    See osdn #42779
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 7e72590783ea74b673d2233f61f6287b36432935
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Sep 5 04:05:37 2021 +0300
+
+    Comment typofix: "Widget's List" -> "widgets list"
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4a80453d1cdc8d28099db54334b009e4c696fd20
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Aug 31 03:43:59 2021 +0300
+
+    AI: Consider buildingless cities worth conquering
+    
+    See osdn #42778
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit c7c1f86653f9618465b7e0494ec6f3fbe162023c
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Sep 2 06:12:44 2021 +0300
+
+    Comment typofix: "becouse" -> "because", and some grammar
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 4fef90b9584c8ac5146cf9a6a84cca4143fe1cdd
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Jun 25 05:23:32 2021 +0300
+
+    Consistently disable help links to space parts when spacerace disabled
+    
+    Reported by Jacob Nevins
+    
+    See hrm Bug #853869
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 27f3ffa7e50e7581689a3da21824972bff448fa9
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Aug 8 14:33:53 2021 +0300
+
+    gtk: Drop unused variable 'total' from city_dialog_update_improvement_list()
+    
+    See osdn #42698
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit ba8c1b92689cdffd14769334ecb562180a150028
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Aug 9 07:00:05 2021 +0300
+
+    winsock2.m4: Remove false comment
+    
+    See osdn #42488
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 0f92c2faf36d741b83d08e024af604771a412b74
+Author: Sveinung Kvilhaugsvik <sveinung84@users.sourceforge.net>
+Date:   Tue Jul 13 12:09:56 2021 +0200
+
+    SDL2 client: implement action_selection_refresh()
+    
+    See osdn #42622
+
+commit 4738509e498e7caaae44ba81feedfaaf4729a389
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Jul 11 02:35:35 2021 +0300
+
+    begin_lanserver_scan(): Call scan->error_func() when necessary
+    
+    Handling of several error situations lacked the call.
+    
+    See osdn #42392
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit f0717d4cba5f6017a19c327e8c01fd747d64c56d
+Author: Sveinung Kvilhaugsvik <sveinung84@users.sourceforge.net>
+Date:   Mon Jun 14 05:47:27 2021 +0200
+
+    Introduce fc_tristate_or().
+    
+    See osdn #42527
+
+commit c02e4631b159d9dae5f01151a05456f20a44f735
+Author: Sveinung Kvilhaugsvik <sveinung84@users.sourceforge.net>
+Date:   Fri Jun 11 10:04:50 2021 +0200
+
+    Metaknowledge for TerrainAlter.
+    
+    See osdn #42512
+
+commit e71f5677462278a72fa85d6d190a3f601ec1041e
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Wed Jun 16 07:11:46 2021 +0300
+
+    Correct ai_timer_init() function header
+    
+    See osdn #42455
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 010f0b9b35b538c0c14e3af0f39c68336becd7e0
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Jul 11 12:07:24 2021 +0300
+
+    .gitignores: Drop entries 'civserver' and 'civclient'
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 15191635f31a98c5e9b2cebcd9d6d09135e46897
+Author: dftec <dftec.es@gmail.com>
+Date:   Fri Jun 25 02:00:51 2021 +0200
+
+    civ2civ3: Correct readme about effect of offshore platforms on lakes
+    
+    Also correct documentation about upkeep of Mass Transit and Mfg. Plant.
+    
+    Requested by chippo
+    
+    See osdn #42468
+
+commit 05ce94b49002737d2276d50a43626c7b106d2079
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Jul 9 08:44:36 2021 +0300
+
+    AI: Consider immediately spent gold as part of income in dai_calc_data()
+    
+    See osdn #42193
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 6ca9b06e6b897fe910904af8d89e93886db11b4f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Thu Jun 10 04:59:08 2021 +0300
+
+    Make identity_number an int
+    
+    It was a short, meaning that it wrapped at 65k despite
+    max number of identity numbers defined to be 250000.
+    
+    Reported by Markus Wiesecke
+    
+    See hrm Bug #927510
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 73778e2592409b0e6e2a1499458b894babcdb790
+Author: Ihnatus <ignatus31oct@mail.ru>
+Date:   Mon Jun 7 00:04:55 2021 +0300
+
+    AI: remove immediate_destination() from dai_unit_goto_constrained()
+    
+    Unnecessary check that sometimes freezed fueled ferries.
+    
+    See osdn #41970
+    
+    Signed-off-by: Ihnatus <ignatus31oct@mail.ru>
+
+commit 475f332c0ed19ad1470caf51ab993fdab01a69b1
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Mon Jun 7 19:41:10 2021 +0300
+
+    Correct spaceship_init() function header
+    
+    It used to imply that capital-capture cancellation of spaceship
+    is not implemented.
+    
+    See osdn #42460
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 615b38d5cd8b95cd10500aab72911772d4e998db
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sat May 29 06:07:00 2021 +0300
+
+    civ1: Make comment about traderoute Cancel behavior non-TODO
+    
+    Update to comment after we got confirmation that the current
+    behavior is correct.
+    
+    Civ1 testing by meynaf
+    
+    See osdn #42318
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit bec6fb57f6d139b01fd64b6293162dd7ecf8e194
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Tue Jun 15 09:47:16 2021 +0300
+
+    Makerules.mk: Make moc rule to respect automake's silent mode
+    
+    See osdn #42458
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 51fb9af70bfc2b7d39843b1047b3962ab249ddd7
+Author: igx31 <32019629+igx31@users.noreply.github.com>
+Date:   Sun Jun 27 09:17:14 2021 +0200
+
+    Update French translation for branch S2_6
+
+commit f75cf5ea35e6315c19f2f02cb9aebf58656c2a3f
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Sun Jun 13 14:54:43 2021 +0300
+
+    is_utype_needed(): Check if unit is animal for some terrain
+    
+    See osdn #42505
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 7a7138f36466d575b2835ac31fb592b6649398ee
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri May 28 02:10:00 2021 +0300
+
+    server_sniff_all_input: Log fc_select() errors
+    
+    See osdn #42403
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 38dc8949cd9ee76b8e8fbc12b81dded2019426f4
+Author: Ihnatus <ignatus31oct@mail.ru>
+Date:   Thu Jun 10 00:15:04 2021 +0300
+
+    Restore AI ability to build Fighters (except paradropping ones)
+    
+    See HRM #658896
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+    Signed-off-by: Ihnatus <ignatus31oct@mail.ru>
+
+commit 932c696f242c899e55649d5e71be7b3a18c8748e
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Jun 25 23:56:42 2021 +0300
+
+    Mark as development code
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
+commit 8bdddc87545b8873bb8e8bf283773f0253647a53
+Author: Marko Lindqvist <cazfi74@gmail.com>
+Date:   Fri Jun 25 23:53:53 2021 +0300
+
+    ChangeLog: Refresh for 2.6.5 release
+    
+    Signed-off-by: Marko Lindqvist <cazfi74@gmail.com>
+
 commit bd95c9fbfaed1db144b56866be997df94b34b802
 Author: Marko Lindqvist <cazfi74@gmail.com>
 Date:   Fri Jun 25 23:52:31 2021 +0300

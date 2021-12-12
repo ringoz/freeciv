@@ -802,6 +802,32 @@ static int tolua_game_Player_culture00(lua_State* tolua_S)
 #endif
 }
 
+/* function: api_methods_private_list_players */
+static int tolua_game_methods_private_list_players00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isnoobj(tolua_S,1,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  lua_State* L =  tolua_S;
+ {
+  lua_Object tolua_ret = (lua_Object)  api_methods_private_list_players(L);
+ tolua_pushvalue(tolua_S,(int)tolua_ret);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'list_players'.",&tolua_err);
+ return 0;
+#endif
+}
+
 /* function: api_methods_private_player_unit_list_head */
 static int tolua_game_methods_private_Player_unit_list_head00(lua_State* tolua_S)
 {
@@ -3430,6 +3456,7 @@ LUALIB_API int luaopen_game (lua_State* tolua_S)
  tolua_endmodule(tolua_S);
  tolua_module(tolua_S,"methods_private",0);
  tolua_beginmodule(tolua_S,"methods_private");
+ tolua_function(tolua_S,"list_players",tolua_game_methods_private_list_players00);
  tolua_module(tolua_S,"Player",0);
  tolua_beginmodule(tolua_S,"Player");
  tolua_function(tolua_S,"unit_list_head",tolua_game_methods_private_Player_unit_list_head00);
@@ -3816,16 +3843,23 @@ LUALIB_API int luaopen_game (lua_State* tolua_S)
   61, 32,105,110,100,101,120, 32, 43, 32, 49, 10,114,101,116,
  117,114,110, 32,108,111,111,107,117,112, 40,105,110,100,101,
  120, 41, 10,101,110,100, 10,114,101,116,117,114,110, 32,105,
- 116,101,114, 97,116,111,114, 10,101,110,100, 10,102,117,110,
-  99,116,105,111,110, 32,112,108, 97,121,101,114,115, 95,105,
- 116,101,114, 97,116,101, 40, 41, 10,114,101,116,117,114,110,
-  32,105,110,100,101,120, 95,105,116,101,114, 97,116,101, 40,
- 102,105,110,100, 46,112,108, 97,121,101,114, 41, 10,101,110,
- 100, 10,102,117,110, 99,116,105,111,110, 32,119,104,111,108,
- 101, 95,109, 97,112, 95,105,116,101,114, 97,116,101, 40, 41,
-  10,114,101,116,117,114,110, 32,105,110,100,101,120, 95,105,
- 116,101,114, 97,116,101, 40,102,105,110,100, 46,116,105,108,
- 101, 41, 10,101,110,100, 10,101,110,100,32
+ 116,101,114, 97,116,111,114, 10,101,110,100, 10,108,111, 99,
+  97,108, 32,108,105,115,116,112, 32, 61, 32,109,101,116,104,
+ 111,100,115, 95,112,114,105,118, 97,116,101, 46,108,105,115,
+ 116, 95,112,108, 97,121,101,114,115, 10,102,117,110, 99,116,
+ 105,111,110, 32,112,108, 97,121,101,114,115, 95,105,116,101,
+ 114, 97,116,101, 40, 41, 10,108,111, 99, 97,108, 32,112,108,
+ 105,115,116, 32, 61, 32,108,105,115,116,112, 40, 41, 10,108,
+ 111, 99, 97,108, 32,105,110,100,101,120, 32, 61, 32, 48, 10,
+ 114,101,116,117,114,110, 32,102,117,110, 99,116,105,111,110,
+  40, 41, 10,105,110,100,101,120, 32, 61, 32,105,110,100,101,
+ 120, 32, 43, 32, 49, 10,114,101,116,117,114,110, 32,112,108,
+ 105,115,116, 91,105,110,100,101,120, 93, 10,101,110,100, 10,
+ 101,110,100, 10,102,117,110, 99,116,105,111,110, 32,119,104,
+ 111,108,101, 95,109, 97,112, 95,105,116,101,114, 97,116,101,
+  40, 41, 10,114,101,116,117,114,110, 32,105,110,100,101,120,
+  95,105,116,101,114, 97,116,101, 40,102,105,110,100, 46,116,
+ 105,108,101, 41, 10,101,110,100, 10,101,110,100,32
  };
  if (luaL_loadbuffer(tolua_S,(char*)B,sizeof(B),"tolua: embedded Lua code") == LUA_OK)
  lua_pcall(tolua_S,0,LUA_MULTRET,0);

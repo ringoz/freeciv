@@ -484,7 +484,7 @@ void plr_widget::nation_selected(const QItemSelection &sl,
     QString("<table><tr><td><b>") + _("Nation") + QString("</b></td><td>")
     + QString(nation_adjective_for_player(pplayer)).toHtmlEscaped()
     + QString("</td><tr><td><b>") + _("Ruler:") + QString("</b></td><td>")
-    + QString(ruler_title_for_player(pplayer, tbuf, sizeof(tbuf)))
+    + QString(title_for_player(pplayer, tbuf, sizeof(tbuf)))
       .toHtmlEscaped()
     + QString("</td></tr><tr><td><b>") + _("Government:")
     + QString("</b></td><td>") + egov.toHtmlEscaped()
@@ -806,16 +806,11 @@ void plr_report::update_report(bool update_selection)
 {
   QModelIndex qmi;
   int player_count = 0;
-  
-  /* Force updating selected player information */
-  if (update_selection) {
-    qmi = plr_wdg->currentIndex();
-    if (qmi.isValid()) {
-      plr_wdg->clearSelection();
-      plr_wdg->setCurrentIndex(qmi);
-    }
-  }
 
+  /* First make sure number of rows is correct - there can be new
+   * nations because of civil war. We don't want our actions to
+   * trigger automatic sorting of the model while number of rows
+   * is not correct. */
   players_iterate(pplayer) {
     if ((is_barbarian(pplayer))){
       continue;
@@ -825,6 +820,15 @@ void plr_report::update_report(bool update_selection)
 
   if (player_count != plr_wdg->get_model()->rowCount()) {
     plr_wdg->get_model()->populate();
+  }
+
+  /* Force updating selected player information */
+  if (update_selection) {
+    qmi = plr_wdg->currentIndex();
+    if (qmi.isValid()) {
+      plr_wdg->clearSelection();
+      plr_wdg->setCurrentIndex(qmi);
+    }
   }
 
   plr_wdg->header()->resizeSections(QHeaderView::ResizeToContents);

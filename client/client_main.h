@@ -101,7 +101,9 @@ bool client_is_observer(void);
 bool client_is_global_observer(void);
 int client_player_number(void);
 bool client_has_player(void);
-struct player *client_player(void);
+
+#define client_player() client.conn.playing
+
 void set_seconds_to_turndone(double seconds);
 int get_seconds_to_turndone(void);
 bool is_waiting_turn_change(void);
@@ -114,6 +116,8 @@ bool can_client_issue_orders(void);
 bool can_client_change_view(void);
 bool can_meet_with_player(const struct player *pplayer);
 bool can_intel_with_player(const struct player *pplayer);
+const char *title_for_player(const struct player *pplayer,
+                             char *buf, size_t buf_len);
 
 void client_exit(void);
 

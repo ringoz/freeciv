@@ -118,7 +118,7 @@ veteran_move_bonus = 0, 0
 name          = _("?unitclass:Land")
 min_speed     = 1
 hp_loss_pct   = 0
-flags         = "TerrainSpeed", "DamageSlows", "CanOccupyCity", "BuildAnywhere",
+flags         = "TerrainSpeed", "CanOccupyCity", "BuildAnywhere",
                 "CollectRansom", "ZOC", "CanFortify", "CanPillage",
                 "TerrainDefense", "KillCitizen"
 
@@ -127,7 +127,7 @@ flags         = "TerrainSpeed", "DamageSlows", "CanOccupyCity", "BuildAnywhere",
 name          = _("?unitclass:Sea")
 min_speed     = 2
 hp_loss_pct   = 0
-flags         = "DamageSlows", "AttackNonNative", "AttFromNonNative"
+flags         = "AttackNonNative", "AttFromNonNative"
 
 [unitclass_air]
 ; /* TRANS: Unit class: used adjectivally */
@@ -135,7 +135,7 @@ name          = _("?unitclass:Air")
 min_speed     = 1
 hp_loss_pct   = 0
 hut_behavior  = "Nothing"
-flags         = "Unreachable", "DoesntOccupyTile"
+flags         = "Unreachable"
 
 [unitclass_missile]
 ; /* TRANS: Unit class: used adjectivally */
@@ -143,7 +143,7 @@ name          = _("?unitclass:Missile")
 min_speed     = 1
 hp_loss_pct   = 0
 hut_behavior  = "Nothing"
-flags         = "Missile", "Unreachable", "DoesntOccupyTile"
+flags         = "Missile", "Unreachable"
 
 ; /* <-- avoid gettext warnings
 ;

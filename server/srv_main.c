@@ -1284,7 +1284,7 @@ static void end_phase(void)
       } else {
         choose_random_tech(presearch);
       }
-      /* add the researched bulbs to the pool; do *NOT* checvk for finished
+      /* Add the researched bulbs to the pool; do *NOT* check for finished
        * research */
       update_bulbs(pplayer, 0, FALSE);
     }
@@ -3000,9 +3000,11 @@ static void srv_scores(void)
   send_server_info_to_metaserver(META_INFO);
 
   if (game.server.save_nturns > 0
-      && conn_list_size(game.est_connections) > 0) {
+      && (conn_list_size(game.est_connections) > 0
+          || !srvarg.quitidle)) {
     /* Save game on game_over, but not when the gameover was caused by
-     * the -q parameter. */
+     * the -q parameter. Be sure that it's the -q, and not an autogame
+     * with no human players. */
     save_game_auto("Game over", AS_GAME_OVER);
   }
 }
