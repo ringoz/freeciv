@@ -5,6 +5,7 @@
 add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR} 
   INCLUDES
     amplio2.tilespec
+    civ2civ3.serv
     classic.serv
     default.serv
     helpdata.txt
@@ -16,6 +17,7 @@ add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR}
     trident.tilespec
     amplio2/
     buildings/
+    civ2civ3/
     classic/
     default/
     flags/
