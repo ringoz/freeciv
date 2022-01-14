@@ -5135,7 +5135,7 @@ static void save_cma_presets(struct section_file *file)
   OPTION_FILE_NAME define defined in fc_config.h)
   Or NULL if problem.
 *****************************************************************/
-static const char *get_current_option_file_name(void)
+const char *get_current_option_file_name(void)
 {
   static char name_buffer[256];
   const char *name;
