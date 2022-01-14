@@ -366,7 +366,7 @@ extern NANOCIV_TLS struct civ_game game;
 #define GAME_MIN_AIFILL              0
 #define GAME_MAX_AIFILL              GAME_MAX_MAX_PLAYERS
 
-#define GAME_DEFAULT_NATIONSET       ""
+#define GAME_DEFAULT_NATIONSET       "all"
 
 #define GAME_DEFAULT_FOODBOX         100
 #define GAME_MIN_FOODBOX             1
