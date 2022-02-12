@@ -1,5 +1,5 @@
 ########################################################################
-# Nanociv - Copyright (C) 2020 - Vladimir Davidovich
+# Copyright (c) Vladimir Davidovich. All rights reserved.
 ########################################################################
 
 gettext_process_po_files(all PO_FILES 

@@ -1,5 +1,5 @@
 ########################################################################
-# Nanociv - Copyright (C) 2020 - Vladimir Davidovich
+# Copyright (c) Vladimir Davidovich. All rights reserved.
 ########################################################################
 
 add_data(fc_data ${CMAKE_CURRENT_SOURCE_DIR} 

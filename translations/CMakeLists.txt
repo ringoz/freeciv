@@ -1,5 +1,5 @@
 ########################################################################
-# Nanociv - Copyright (C) 2020 - Vladimir Davidovich
+# Copyright (c) Vladimir Davidovich. All rights reserved.
 ########################################################################
 
 add_text(fc_text
