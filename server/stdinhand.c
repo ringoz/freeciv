@@ -3766,6 +3766,15 @@ bool load_command(struct connection *caller, const char *filename, bool check,
 
   savegame2_load(file);
   secfile_check_unused(file);
+  if (!secfile_lookup_str(file, "savefile.options"))
+  {
+    log_error("Error loading savefile '%s': %s", arg, secfile_error());
+    cmd_reply(CMD_LOAD, caller, C_FAIL, _("Could not load savefile: %s"),
+              arg);
+    dlsend_packet_game_load(game.est_connections, FALSE, arg);
+    secfile_destroy(file);
+    return FALSE;
+  }
   secfile_destroy(file);
 
   log_verbose("Load time: %g seconds (%g apparent)",
