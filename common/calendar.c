@@ -102,7 +102,7 @@ void game_advance_year(void)
 ****************************************************************************/
 const char *textyear(int year)
 {
-  static char y[32];
+  NANOCIV_TLS static char y[32];
 
   if (year < 0) {
     /* TRANS: <year> <label> -> "1000 BC" */

@@ -511,7 +511,7 @@ fc_errno fc_get_errno(void)
 const char *fc_strerror(fc_errno err)
 {
 #ifdef WIN32_NATIVE
-  static char buf[256];
+  NANOCIV_TLS static char buf[256];
 
   if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		     NULL, err, 0, buf, sizeof(buf), NULL)) {
@@ -521,12 +521,12 @@ const char *fc_strerror(fc_errno err)
   return buf;
 #else  /* WIN32_NATIVE */
 #ifdef HAVE_STRERROR
-  static char buf[256];
+  NANOCIV_TLS static char buf[256];
 
   return local_to_internal_string_buffer(strerror(err),
                                          buf, sizeof(buf));
 #else  /* HAVE_STRERROR */
-  static char buf[64];
+  NANOCIV_TLS static char buf[64];
 
   fc_snprintf(buf, sizeof(buf),
 	      _("error %d (compiled without strerror)"), err);
