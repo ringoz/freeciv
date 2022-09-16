@@ -115,7 +115,7 @@ static bool sdl_audio_play(const char *const tag, const char *const fullpath,
     for (j = 0; j < MIX_CHANNELS; j++) {
       if (samples[j].tag && (strcmp(samples[j].tag, tag) == 0)) {
         log_debug("Playing file \"%s\" from cache (slot %d)", fullpath, j);
-        Mix_PlayChannel(-1, samples[j].wave, 0);
+        Mix_PlayChannel(j, samples[j].wave, 0);
         return TRUE;
       }
     }                           /* guess not */
@@ -216,6 +216,7 @@ static void sdl_audio_shutdown(void)
       Mix_FreeChunk(samples[i].wave);
     }
   }
+  Mix_HookMusicFinished(NULL);
   Mix_HaltMusic();
   Mix_FreeMusic(mus);
 

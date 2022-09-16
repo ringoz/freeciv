@@ -377,7 +377,7 @@ target_sources(fc_common PRIVATE
   )
 
 add_library(fc_client STATIC)
-target_link_libraries(fc_client PUBLIC fc_common)
+target_link_libraries(fc_client PUBLIC fc_common PRIVATE SDL2_mixer)
 target_include_directories(fc_client PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/client
     ${CMAKE_CURRENT_SOURCE_DIR}/client/agents
@@ -438,6 +438,8 @@ target_sources(fc_client PRIVATE
     client/audio.h
     client/audio_none.c
     client/audio_none.h
+    client/audio_sdl.c
+    client/audio_sdl.h
     client/chatline_common.c
     client/chatline_common.h
     client/citydlg_common.c

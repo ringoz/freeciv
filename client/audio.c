@@ -378,7 +378,7 @@ static void music_finished_callback(void)
 
     return;
   }
-
+#endif
   if (let_single_track_play) {
     /* This call is style music ending before single track plays.
      * Do not restart style music now.
@@ -387,7 +387,7 @@ static void music_finished_callback(void)
 
     return;
   }
-#endif
+
   switch (current_usage) {
   case MU_MENU:
     usage_enabled = gui_options.sound_enable_menu_music;
@@ -606,6 +606,10 @@ void audio_play_music(const char *const tag, char *const alt_tag,
 **************************************************************************/
 void audio_play_track(const char *const tag, char *const alt_tag)
 {
+  if (!(tag && secfile_lookup_str(ms_tagfile, "files.%s", tag) ||
+        alt_tag && secfile_lookup_str(ms_tagfile, "files.%s", alt_tag)))
+    return;
+
   if (current_track >= 0) {
     /* Only set let_single_track_play when there's music playing that will
      * result in calling the music_finished_callback */
