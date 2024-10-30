@@ -1720,17 +1720,15 @@ void update_map_canvas(int canvas_x, int canvas_y, int width, int height)
   if (canvas_x < 0) {
     width += canvas_x;
     canvas_x = 0;
-  } else if (canvas_x > mapview.store_width) {
-    width -= (canvas_x - mapview.store_width);
-    canvas_x = mapview.store_width;
+  } else if (canvas_x + width > mapview.store_width) {
+    width = mapview.store_width - canvas_x;
   }
 
   if (canvas_y < 0) {
     height += canvas_y;
     canvas_y = 0;
-  } else if (canvas_y > mapview.store_height) {
-    height -= (canvas_y - mapview.store_height);
-    canvas_y = mapview.store_height;
+  } else if (canvas_y + height > mapview.store_height) {
+    height = mapview.store_height - canvas_y;
   }
 
   if (width <= 0 || height <= 0) {
