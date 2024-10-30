@@ -101,11 +101,23 @@
 /* utility */
 #include "fciconv.h"
 #include "fcintl.h"
+#include "fcthread.h"
 #include "log.h"
 #include "mem.h"
 #include "netintf.h"
 
 #include "support.h"
+
+static bool support_initialized = FALSE;
+
+#ifndef HAVE_WORKING_VSNPRINTF
+static char *vsnprintf_buf = NULL;
+static fc_mutex vsnprintf_mutex;
+#endif /* HAVE_WORKING_VSNPRINTF */
+
+#ifndef HAVE_LOCALTIME_R
+static fc_mutex localtime_mutex;
+#endif /* HAVE_LOCALTIME_R */
 
 /***************************************************************
   Compare strings like strcmp(), but ignoring case.
@@ -765,7 +777,7 @@ size_t fc_strlcat(char *dest, const char *src, size_t n)
   does occur, returns the number of characters which would have been
   produced without truncation.
   (Linux man page says returns -1 on truncation, but glibc seems to
-  do as above nevertheless; check_native_vsnprintf() above tests this.)
+  do as above nevertheless; configure tests this.)
 
   [glibc is correct.  Viz.
 
@@ -800,8 +812,8 @@ size_t fc_strlcat(char *dest, const char *src, size_t n)
   See also fc_utf8_vsnprintf_trunc(), fc_utf8_vsnprintf_rep().
 ****************************************************************************/
 
-/* "64k should be big enough for anyone" ;-) */
-#define VSNP_BUF_SIZE (64*1024)
+/* This must be at least as big as PLAIN_FILE_BUF_SIZE in ioz.c */
+#define VSNP_BUF_SIZE (8096*1024)
 int fc_vsnprintf(char *str, size_t n, const char *format, va_list ap)
 {
 #ifdef HAVE_WORKING_VSNPRINTF
@@ -819,36 +831,41 @@ int fc_vsnprintf(char *str, size_t n, const char *format, va_list ap)
   r = vsnprintf(str, n, format, ap);
   str[n - 1] = 0;
 
-  /* Convert C99 return value to C89.  */
-  if (r >= n) {
-    return -1;
-  }
-
   return r;
 #else  /* HAVE_WORKING_VSNPRINTF */
   {
     /* Don't use fc_malloc() or log_*() here, since they may call
        fc_vsnprintf() if it fails.  */
- 
-    static char *buf;
     size_t len;
 
-    if (!buf) {
-      buf = malloc(VSNP_BUF_SIZE);
+    if (n > VSNP_BUF_SIZE) {
+      fprintf(stderr, "fc_vsnprintf() call with length %u."
+              "Maximum supported is %d", (unsigned)n, VSNP_BUF_SIZE);
+      exit(EXIT_FAILURE);
+    }
 
-      if (!buf) {
-	fprintf(stderr, "Could not allocate %i bytes for vsnprintf() "
-		"replacement.", VSNP_BUF_SIZE);
-	exit(EXIT_FAILURE);
+    fc_allocate_mutex(&vsnprintf_mutex);
+
+    if (vsnprintf_buf == NULL) {
+      vsnprintf_buf = malloc(VSNP_BUF_SIZE);
+
+      if (vsnprintf_buf == NULL) {
+        fprintf(stderr, "Could not allocate %i bytes for vsnprintf() "
+                "replacement.", VSNP_BUF_SIZE);
+        fc_release_mutex(&vsnprintf_mutex);
+        exit(EXIT_FAILURE);
       }
     }
+
+    vsnprintf_buf[VSNP_BUF_SIZE - 1] = '\0';
+
 #ifdef HAVE_VSNPRINTF
-    vsnprintf(buf, n, format, ap);
+    vsnprintf(vsnprintf_buf, n, format, ap);
 #else
-    vsprintf(buf, format, ap);
+    vsprintf(vsnprintf_buf, format, ap);
 #endif /* HAVE_VSNPRINTF */
-    buf[VSNP_BUF_SIZE - 1] = '\0';
-    len = strlen(buf);
+
+    len = strlen(vsnprintf_buf);
 
     if (len >= VSNP_BUF_SIZE - 1) {
       fprintf(stderr, "Overflow in vsnprintf replacement!"
@@ -856,13 +873,15 @@ int fc_vsnprintf(char *str, size_t n, const char *format, va_list ap)
       abort();
     }
     if (n >= len + 1) {
-      memcpy(str, buf, len+1);
-      return len;
+      memcpy(str, vsnprintf_buf, len + 1);
     } else {
-      memcpy(str, buf, n-1);
+      memcpy(str, vsnprintf_buf, n - 1);
       str[n - 1] = '\0';
-      return -1;
     }
+
+    fc_release_mutex(&vsnprintf_mutex);
+
+    return len;
   }
 #endif /* HAVE_WORKING_VSNPRINTF */
 }
@@ -1215,6 +1234,22 @@ const char *fc_basename(const char *path)
 }
 
 /*****************************************************************
+  Thread safe localtime() replacement
+*****************************************************************/
+struct tm *fc_localtime(const time_t *timep, struct tm *result)
+{
+#ifdef HAVE_LOCALTIME_R
+  return localtime_r(timep, result);
+#else  /* HAVE_LOCALTIME_R */
+  fc_allocate_mutex(&localtime_mutex);
+  memcpy(result, localtime(timep), sizeof(struct tm));
+  fc_release_mutex(&localtime_mutex);
+
+  return result;
+#endif /* HAVE_LOCALTIME_R */
+}
+
+/*****************************************************************
   Set quick_exit() callback if possible.
 *****************************************************************/
 int fc_at_quick_exit(void (*func)(void))
@@ -1224,4 +1259,48 @@ int fc_at_quick_exit(void (*func)(void))
 #else  /* HAVE_AT_QUICK_EXIT */
   return -1;
 #endif /* HAVE_AT_QUICK_EXIT */
+}
+
+/*****************************************************************
+  Initialize support module.
+*****************************************************************/
+void fc_support_init(void)
+{
+#ifndef HAVE_WORKING_VSNPRINTF
+  fc_init_mutex(&vsnprintf_mutex);
+#endif /* HAVE_WORKING_VSNPRINTF */
+
+#ifndef HAVE_LOCALTIME_R
+  fc_init_mutex(&localtime_mutex);
+#endif /* HAVE_LOCALTIME_R */
+
+  support_initialized = TRUE;
+}
+
+/*****************************************************************
+  Free misc resources allocated by the support module.
+*****************************************************************/
+void fc_support_free(void)
+{
+  support_initialized = FALSE;
+
+#ifndef HAVE_WORKING_VSNPRINTF
+  if (vsnprintf_buf != NULL) {
+    free(vsnprintf_buf);
+    vsnprintf_buf = NULL;
+  }
+  fc_destroy_mutex(&vsnprintf_mutex);
+#endif /* HAVE_WORKING_VSNPRINTF */
+
+#ifndef HAVE_LOCALTIME_R
+  fc_destroy_mutex(&localtime_mutex);
+#endif /* HAVE_LOCALTIME_R */
+}
+
+/*****************************************************************
+  Is the support module currently in usable state?
+*****************************************************************/
+bool are_support_services_available(void)
+{
+  return support_initialized;
 }

@@ -1649,6 +1649,19 @@ static void sg_load_savefile(struct loaddata *loading)
                    secfile_error());
   }
 
+  /* Since freeciv-2.6 savegame format contains activities order, for the
+   * benefit of future versions. This version does not need them.
+   * Just lookup the entries to avoid warnings about unused entries. */
+  {
+    int j;
+
+    i = secfile_lookup_int_default(loading->file, 0, "savefile.activities_size");
+    for (j = 0; j < i; j++) {
+      (void) secfile_entry_lookup(loading->file,
+                                  "savefile.activities_vector,%d", j);
+    }
+  }
+
   /* Load traits. */
   loading->trait.size
     = secfile_lookup_int_default(loading->file, 0,
@@ -1891,13 +1904,23 @@ static void sg_load_savefile(struct loaddata *loading)
 
     for (j = 0; j < loading->ds_t.size; j++) {
       loading->ds_t.order[j] = diplstate_type_by_name(modname[j],
-                                                    fc_strcasecmp);
+                                                      fc_strcasecmp);
     }
 
     free(modname);
   }
 
-    terrain_type_iterate(pterr) {
+  /* Not used by this freeciv version - for future use */
+  {
+    int j;
+
+    i = secfile_lookup_int_default(loading->file, 0, "savefile.city_options_size");
+    for (j = 0; j < i; j++) {
+      (void) secfile_entry_lookup(loading->file, "savefile.city_options_vector,%d", j);
+    }
+  }
+
+  terrain_type_iterate(pterr) {
     pterr->identifier_load = '\0';
   } terrain_type_iterate_end;
 
@@ -2260,6 +2283,12 @@ static void sg_load_game(struct loaddata *loading)
                                      "game.level");
   if (level != NULL) {
     game.info.skill_level = ai_level_by_name(level, fc_strcasecmp);
+
+    /* In builds where level "Experimental" is not supported, convert it to "Hard" */
+    if (!ai_level_is_valid(game.info.skill_level)
+        && !fc_strcasecmp(level, "Experimental")) {
+      game.info.skill_level = AI_LEVEL_HARD;
+    }
   } else {
     game.info.skill_level = ai_level_invalid();
   }
@@ -3957,6 +3986,7 @@ static void sg_load_players(struct loaddata *loading)
       if (pplayers_allied(plr, aplayer)) {
         enum dipl_reason can_ally = pplayer_can_make_treaty(plr, aplayer,
                                                             DS_ALLIANCE);
+
         if (can_ally == DIPL_ALLIANCE_PROBLEM_US
             || can_ally == DIPL_ALLIANCE_PROBLEM_THEM) {
           log_sg("Illegal alliance structure detected: "
@@ -3980,7 +4010,7 @@ static void sg_load_players(struct loaddata *loading)
     } cities_iterate_end;
   }
 
-  /* Update all city information.  This must come after all cities are
+  /* Update all city information. This must come after all cities are
    * loaded (in player_load) but before player (dumb) cities are loaded
    * in player_load_vision(). */
   players_iterate(plr) {
@@ -7259,14 +7289,14 @@ static void sg_load_treaties(struct loaddata *loading)
             add_clause(ptreaty, pgiver, type, value);
           }
         }
-
-        /* These must be after clauses have been added so that acceptance
-         * does not get cleared by what seems like changes to the treaty. */
-        ptreaty->accept0 = secfile_lookup_bool_default(loading->file, FALSE,
-                                                       "treaty%d.accept0", tidx);
-        ptreaty->accept1 = secfile_lookup_bool_default(loading->file, FALSE,
-                                                       "treaty%d.accept1", tidx);
       }
+
+      /* These must be after clauses have been added so that acceptance
+       * does not get cleared by what seems like changes to the treaty. */
+      ptreaty->accept0 = secfile_lookup_bool_default(loading->file, FALSE,
+                                                     "treaty%d.accept0", tidx);
+      ptreaty->accept1 = secfile_lookup_bool_default(loading->file, FALSE,
+                                                     "treaty%d.accept1", tidx);
     }
   }
 }

@@ -371,7 +371,7 @@ gboolean map_canvas_focus(void)
   This function ensures an entry widget (like the inputline) always gets
   first dibs at handling a keyboard event.
 **************************************************************************/
-static gboolean toplevel_handler(GtkWidget *w, GdkEventKey *ev, gpointer data)
+static gboolean toplevel_handler(GtkWidget *w, GdkEvent *ev, gpointer data)
 {
   GtkWidget *focus;
 
@@ -381,7 +381,7 @@ static gboolean toplevel_handler(GtkWidget *w, GdkEventKey *ev, gpointer data)
         || (GTK_IS_TEXT_VIEW(focus)
             && gtk_text_view_get_editable(GTK_TEXT_VIEW(focus)))) {
       /* Propagate event to currently focused entry widget. */
-      if (gtk_widget_event(focus, (GdkEvent *) ev)) {
+      if (gtk_widget_event(focus, ev)) {
 	/* Do not propagate event to our children. */
 	return TRUE;
       }
@@ -444,10 +444,12 @@ static gboolean key_press_map_canvas(GtkWidget *w, GdkEventKey *ev,
   if (!(ev->state & GDK_CONTROL_MASK)) {
     switch (ev->keyval) {
     case GDK_KEY_plus:
+    case GDK_KEY_KP_Add:
       zoom_step_up();
       return TRUE;
 
     case GDK_KEY_minus:
+    case GDK_KEY_KP_Subtract:
       zoom_step_down();
       return TRUE;
 
@@ -777,9 +779,9 @@ static void tearoff_destroy(GtkWidget *w, gpointer data)
 /**************************************************************************
   Propagates a keypress in a tearoff back to the toplevel window.
 **************************************************************************/
-static gboolean propagate_keypress(GtkWidget *w, GdkEventKey *ev)
+static gboolean propagate_keypress(GtkWidget *w, GdkEvent *ev)
 {
-  gtk_widget_event(toplevel, (GdkEvent *)ev);
+  gtk_widget_event(toplevel, ev);
 
   return FALSE;
 }
@@ -1911,11 +1913,6 @@ void ui_main(int argc, char **argv)
   gtk_main();
   gui_up = FALSE;
 
-  /* We have extra ref for unit_info_box that has protected
-   * it from getting destroyed when editinfobox_refresh()
-   * moves widgets around. Free that extra ref here. */
-  g_object_unref(unit_info_box);
-
   destroy_server_scans();
   free_mapcanvas_and_overview();
   spaceship_dialog_done();
@@ -1926,6 +1923,12 @@ void ui_main(int argc, char **argv)
   diplomacy_dialog_done();
   cma_fe_done();
   free_unit_table();
+
+  /* We have extra ref for unit_info_box that has protected
+   * it from getting destroyed when editinfobox_refresh()
+   * moves widgets around. Free that extra ref here. */
+  g_object_unref(unit_info_box);
+
   editgui_free();
   gtk_widget_destroy(toplevel_tabs);
   gtk_widget_destroy(toplevel);

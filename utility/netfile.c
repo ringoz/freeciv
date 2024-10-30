@@ -28,8 +28,12 @@
 #include <curl/curl.h>
 
 struct netfile_post {
+#ifdef HAVE_CURL_MIME_API
+  curl_mime *mime;
+#else  /* HAVE_CURL_MIME_API */
   struct curl_httppost *first;
   struct curl_httppost *last;
+#endif /* HAVE_CURL_MIME_API */
 };
 
 typedef size_t (*netfile_write_cb)(char *ptr, size_t size, size_t nmemb, void *userdata);
@@ -233,7 +237,13 @@ bool netfile_download_file(const char *URL, const char *filename,
 ***********************************************************************/
 struct netfile_post *netfile_start_post(void)
 {
-  return fc_calloc(1, sizeof(struct netfile_post));
+  struct netfile_post *post = fc_calloc(1, sizeof(struct netfile_post));
+
+#ifdef HAVE_CURL_MIME_API
+  post->mime = curl_mime_init(netfile_init_handle());
+#endif
+
+  return post;
 }
 
 /********************************************************************** 
@@ -243,10 +253,19 @@ void netfile_add_form_str(struct netfile_post *post,
                           const char *name, const char *val)
 {
 #ifndef NANOCIV
+#ifdef HAVE_CURL_MIME_API
+  curl_mimepart *part;
+
+  part = curl_mime_addpart(post->mime);
+
+  curl_mime_data(part, val, CURL_ZERO_TERMINATED);
+  curl_mime_name(part, name);
+#else  /* HAVE_CURL_MIME_API */
   curl_formadd(&post->first, &post->last,
                CURLFORM_COPYNAME, name,
                CURLFORM_COPYCONTENTS, val,
                CURLFORM_END);
+#endif /* HAVE_CURL_MIME_API */
 #else /* NANOCIV */
   if (post->body[0])
     strcat_s(post->body, sizeof(post->body), "&");
@@ -275,7 +294,11 @@ void netfile_add_form_int(struct netfile_post *post,
 void netfile_close_post(struct netfile_post *post)
 {
 #ifndef NANOCIV
+#ifdef HAVE_CURL_MIME_API
+  curl_mime_free(post->mime);
+#else  /* HAVE_CURL_MIME_API */
   curl_formfree(post->first);
+#endif /* HAVE_CURL_MIME_API */
 #endif /* NANOCIV */
   FC_FREE(post);
 }
@@ -284,7 +307,8 @@ void netfile_close_post(struct netfile_post *post)
   Dummy write callback used only to make sure curl's default write
   function does not get used as we don't want reply to stdout
 ***********************************************************************/
-static size_t dummy_write(void *buffer, size_t size, size_t nmemb, void *userp)
+static size_t dummy_write(void *buffer, size_t size, size_t nmemb,
+                          void *userp)
 {
   return size * nmemb;
 }
@@ -293,7 +317,8 @@ static size_t dummy_write(void *buffer, size_t size, size_t nmemb, void *userp)
   Send HTTP POST
 ***********************************************************************/
 bool netfile_send_post(const char *URL, struct netfile_post *post,
-                       FILE *reply_fp, struct netfile_write_cb_data *mem_data,
+                       FILE *reply_fp,
+                       struct netfile_write_cb_data *mem_data,
                        const char *addr)
 {
 #ifndef NANOCIV
@@ -307,7 +332,13 @@ bool netfile_send_post(const char *URL, struct netfile_post *post,
   headers = curl_slist_append(headers,"User-Agent: Freeciv/" VERSION_STRING);
 
   curl_easy_setopt(handle, CURLOPT_URL, URL);
+
+#ifdef HAVE_CURL_MIME_API
+  curl_easy_setopt(handle, CURLOPT_MIMEPOST, post->mime);
+#else  /* HAVE_CURL_MIME_API */
   curl_easy_setopt(handle, CURLOPT_HTTPPOST, post->first);
+#endif /* HAVE_CURL_MIME_API */
+
   if (mem_data != NULL) {
     mem_data->mem = NULL;
     mem_data->size = 0;

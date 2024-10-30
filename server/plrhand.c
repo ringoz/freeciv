@@ -453,8 +453,9 @@ void handle_player_change_government(struct player *pplayer,
      * a government). */
     turns = pplayer->revolution_finishes - game.info.turn;
   } else if ((pplayer->ai_controlled && !has_handicap(pplayer, H_REVOLUTION))
-	     || !anarchy) {
+             || !anarchy) {
     /* AI players without the H_REVOLUTION handicap can skip anarchy */
+    anarchy = FALSE;
     turns = 0;
   } else {
     turns = revolution_length(gov, pplayer);
@@ -466,7 +467,8 @@ void handle_player_change_government(struct player *pplayer,
   if (anarchy && turns <= 0
       && pplayer->government != game.government_during_revolution) {
     /* Multiple changes attempted after single anarchy period */
-    if (game.info.revolentype == REVOLEN_QUICKENING) {
+    if (game.info.revolentype == REVOLEN_QUICKENING
+        || game.info.revolentype == REVOLEN_RANDQUICK) {
       notify_player(pplayer, NULL, E_REVOLT_DONE, ftc_server,
                     _("You can't revolt the same turn you finished previous revolution."));
       return;
@@ -2027,8 +2029,7 @@ void make_contact(struct player *pplayer1, struct player *pplayer2,
     enum diplstate_type new_state = get_default_diplstate(pplayer1,
                                                           pplayer2);
 
-    ds_plr1plr2->type = new_state;
-    ds_plr2plr1->type = new_state;
+    set_diplstate_type(ds_plr1plr2, ds_plr2plr1, new_state);
     ds_plr1plr2->first_contact_turn = game.info.turn;
     ds_plr2plr1->first_contact_turn = game.info.turn;
     notify_player(pplayer1, ptile, E_FIRST_CONTACT, ftc_server,
@@ -2533,6 +2534,7 @@ static struct player *split_player(struct player *pplayer)
   new_research->bulbs_researched = 0;
   new_research->techs_researched = old_research->techs_researched;
   new_research->researching = old_research->researching;
+  new_research->future_tech = old_research->future_tech;
   new_research->tech_goal = old_research->tech_goal;
 
   advance_index_iterate(A_NONE, i) {

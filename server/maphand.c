@@ -825,6 +825,11 @@ void map_show_all(struct player *pplayer)
 ****************************************************************************/
 bool map_is_known(const struct tile *ptile, const struct player *pplayer)
 {
+  if (pplayer->tile_known.vec == NULL) {
+    /* Player map not initialized yet */
+    return FALSE;
+  }
+
   return dbv_isset(&pplayer->tile_known, tile_index(ptile));
 }
 
@@ -971,7 +976,11 @@ void map_change_seen(struct player *pplayer,
 
     /* Discover units. */
     unit_list_iterate(ptile->units, punit) {
-      if (unit_is_visible_on_layer(punit, V_MAIN)) {
+      /* Be sure not to revive dead unit on client when it's not yet
+       * removed from the tile. This could happen when "unit_lost" lua script
+       * somehow causes tile of the dead unit to unfog again. */
+      if (unit_is_visible_on_layer(punit, V_MAIN)
+          && !punit->server.dying) {
         send_unit_info(pplayer->connections, punit);
       }
     } unit_list_iterate_end;

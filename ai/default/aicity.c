@@ -518,7 +518,7 @@ static void dai_spend_gold(struct ai_type *ait, struct player *pplayer)
 
     if (is_unit_choice_type(bestchoice.type)
         && utype_is_cityfounder(bestchoice.value.utype)) {
-      if (get_city_bonus(pcity, EFT_GROWTH_FOOD) == 0
+      if (get_city_bonus(pcity, EFT_GROWTH_FOOD) <= 0
           && bestchoice.value.utype->pop_cost > 0
           && city_size_get(pcity) <= bestchoice.value.utype->pop_cost) {
         /* Don't buy settlers in cities that cannot afford the population cost. */
@@ -635,8 +635,8 @@ static int unit_foodbox_cost(struct unit *punit)
     int cost = 0;
     int i;
 
-    /* The default is to lose 100%.  The growth bonus reduces this. */
-    int foodloss_pct = 100 - get_city_bonus(pcity, EFT_GROWTH_FOOD);
+    /* The default is to lose 100%. The growth bonus reduces this. */
+    int foodloss_pct = 100 - city_granary_savings(pcity);
 
     foodloss_pct = CLIP(0, foodloss_pct, 100);
     fc_assert_ret_val(pcity != NULL, -1);
@@ -1559,7 +1559,9 @@ static void adjust_improvement_wants_by_effects(struct ai_type *ait,
 
     /* Is it possible to do the action to the city right now?
      *
-     * (DiplRel requirements are ignored since actor_player is NULL) */
+     * (DiplRel requirements are ignored since actor_player is NULL)
+     *
+     * See TODO below about keeping this in sync with 'will_be_possible' */
     is_possible = is_action_possible_on_city(act_id, NULL, pcity);
 
     /* Will it be possible to do the action to the city if the building is
@@ -1580,11 +1582,14 @@ static void adjust_improvement_wants_by_effects(struct ai_type *ait,
             active = FALSE;
             break;
           }
-        }
-
-        if (!is_req_active(pplayer, NULL, pcity, pimprove,
-                           city_tile(pcity), NULL, NULL, NULL, NULL,
-                           preq, RPT_POSSIBLE)) {
+        } else if (!is_req_active(pplayer, NULL, pcity, NULL,
+                                  city_tile(pcity), NULL, NULL, NULL, NULL,
+                                  preq, RPT_POSSIBLE)) {
+          /* TODO: Make this more robust! Now we must be really careful
+           *       that 'is_possible' is checked by exatly similar context
+           *       to this 'will_be_possible' or either one may trip on
+           *       a requirement that the other one does not, causing
+           *       them to differ when they should not. */
           active = FALSE;
           break;
         }

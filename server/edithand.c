@@ -486,6 +486,15 @@ void handle_edit_unit_create(struct connection *pc, int owner, int tile,
     return;
   }
 
+  if (utype_has_flag(punittype, UTYF_UNIQUE)) {
+    if (utype_player_already_has_this_unique(pplayer, punittype)) {
+      return;
+    }
+    if (count > 1) {
+      return;
+    }
+  }
+
   if (is_non_allied_unit_tile(ptile, pplayer)
       || (tile_city(ptile)
           && !pplayers_allied(pplayer, city_owner(tile_city(ptile))))) {
@@ -703,25 +712,17 @@ void handle_edit_city_create(struct connection *pc, int owner, int tile,
 
   }
 
+  conn_list_do_buffer(game.est_connections);
 
-  if (is_enemy_unit_tile(ptile, pplayer) != NULL
-      || !city_can_be_built_here(ptile, NULL)) {
+  if (!create_city_for_player(pplayer, ptile, NULL)) {
     notify_conn(pc->self, ptile, E_BAD_COMMAND, ftc_editor,
                 /* TRANS: ..." at <tile-coordinates>." */
                 _("A city may not be built at %s."), tile_link(ptile));
+    conn_list_do_unbuffer(game.est_connections);
+
     return;
   }
 
-  if (!pplayer->is_alive) {
-    pplayer->is_alive = TRUE;
-    send_player_info_c(pplayer, NULL);
-  }
-
-  conn_list_do_buffer(game.est_connections);
-
-  map_show_tile(pplayer, ptile);
-  create_city(pplayer, ptile, city_name_suggestion(pplayer, ptile),
-              pplayer);
   pcity = tile_city(ptile);
 
   if (size > 1) {

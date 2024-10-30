@@ -901,9 +901,23 @@ bool can_unit_do_activity_targeted_at(const struct unit *punit,
    *        change that destroys the target of the other activity */
   if (target != NULL && is_build_activity(activity, ptile)) {
     unit_list_iterate(ptile->units, tunit) {
-      if (is_build_activity(tunit->activity, ptile)
-          && !can_extras_coexist(target, tunit->activity_target)) {
-        return FALSE;
+      if (is_build_activity(tunit->activity, ptile)) {
+        /* With bad luck on idle callback timing it's
+         * possible that the client has already received a tile terrain change
+         * packet, but not yet the packet removing activity from tunit.
+         * So, it's possible that tunit was making a transforming Irrigate or Mine
+         * for the previous terrain, but with the new terrain Irrigate or Mine
+         * would be considered build activity, and that's what
+         * above is_build_activity() said. The can_extra_coexist() would
+         * crash because there is no target defined for the transforming activities. */
+        if (tunit->activity_target != NULL) {
+          if (!can_extras_coexist(target, tunit->activity_target)) {
+            return FALSE;
+          }
+        } else {
+          fc_assert((tunit->activity == ACTIVITY_IRRIGATE)
+                    || (tunit->activity == ACTIVITY_MINE));
+        }
       }
     } unit_list_iterate_end;
   }
@@ -1298,21 +1312,6 @@ bv_extras get_unit_tile_pillage_set(const struct tile *ptile)
   } unit_list_iterate_end;
 
   return tgt_ret;
-}
-
-/**************************************************************************
-  Return text describing the unit's current activity as a static string.
-
-  FIXME: Convert all callers of this function to unit_activity_astr()
-  because this function is not re-entrant.
-**************************************************************************/
-const char *unit_activity_text(const struct unit *punit) {
-  static struct astring str = ASTRING_INIT;
-
-  astr_clear(&str);
-  unit_activity_astr(punit, &str);
-
-  return astr_str(&str);
 }
 
 /**************************************************************************
@@ -2541,18 +2540,20 @@ static void *cargo_iter_get(const struct iterator *it)
 static void cargo_iter_next(struct iterator *it)
 {
   struct cargo_iter *iter = CARGO_ITER(it);
-  const struct unit_list_link *piter = iter->links[iter->depth - 1];
+  const struct unit_list_link *piter;
   const struct unit_list_link *pnext;
 
   /* Variant 1: unit has cargo. */
-  pnext = unit_list_head(unit_transport_cargo(unit_list_link_data(piter)));
+  pnext = unit_list_head(unit_transport_cargo(cargo_iter_get(it)));
   if (NULL != pnext) {
     fc_assert(iter->depth < ARRAY_SIZE(iter->links));
     iter->links[iter->depth++] = pnext;
     return;
   }
 
-  do {
+  while (iter->depth > 0) {
+    piter = iter->links[iter->depth - 1];
+
     /* Variant 2: there are other cargo units at same level. */
     pnext = unit_list_link_next(piter);
     if (NULL != pnext) {
@@ -2561,8 +2562,8 @@ static void cargo_iter_next(struct iterator *it)
     }
 
     /* Variant 3: return to previous level, and do same tests. */
-    piter = iter->links[iter->depth-- - 2];
-  } while (0 < iter->depth);
+    iter->depth--;
+  }
 }
 
 /****************************************************************************

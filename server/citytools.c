@@ -167,6 +167,35 @@ void city_freeze_workers_queue(struct city *pcity)
 }
 
 /****************************************************************************
+  Create city for player, doing necessary checks and adjustments.
+
+  Return whether it was legal to create the city. If not, city was not
+  created.
+****************************************************************************/
+bool create_city_for_player(struct player *pplayer, struct tile *ptile,
+                            const char *name)
+{
+  if (is_enemy_unit_tile(ptile, pplayer) != NULL
+      || !city_can_be_built_here(ptile, NULL)) {
+    return FALSE;
+  }
+
+  if (!pplayer->is_alive) {
+    pplayer->is_alive = TRUE;
+    send_player_info_c(pplayer, NULL);
+  }
+
+  if (name == NULL || name[0] == '\0') {
+    name = city_name_suggestion(pplayer, ptile);
+  }
+
+  map_show_tile(pplayer, ptile);
+  create_city(pplayer, ptile, name, pplayer);
+
+  return TRUE;
+}
+
+/****************************************************************************
   Remove a city from the queue for later calls to auto_arrange_workers().
   Reterns TRUE if the city was found in the queue.
 ****************************************************************************/
@@ -1645,7 +1674,7 @@ void remove_city(struct city *pcity)
     }
   } unit_list_iterate_safe_end;
 
-  /* make sure ships are not left on land when city is removed. */
+  /* Make sure ships are not left on land when city is removed. */
   unit_list_iterate_safe(pcenter->units, punit) {
     bool moved;
     struct unit_type *punittype = unit_type_get(punit);
@@ -1688,6 +1717,7 @@ void remove_city(struct city *pcity)
   dbv_init(&tile_processed, map_num_tiles());
   for (tile_list_append(process_queue, pcenter); tile_list_size(process_queue) > 0;) {
     struct tile *ptile = tile_list_front(process_queue);
+
     tile_list_pop_front(process_queue);
     dbv_set(&tile_processed, tile_index(ptile));
     adjc_iterate(ptile, piter) {
@@ -1805,8 +1835,10 @@ void remove_city(struct city *pcity)
     }
   } conn_list_iterate_end;
 
-  vision_clear_sight(old_vision);
-  vision_free(old_vision);
+  if (old_vision != NULL) {
+    vision_clear_sight(old_vision);
+    vision_free(old_vision);
+  }
 
   /* Infrastructures may have changed. */
   send_tile_info(NULL, pcenter, FALSE);
@@ -2002,9 +2034,9 @@ void unit_enter_city(struct unit *punit, struct city *pcity, bool passenger)
 }
 
 /**************************************************************************
- Which wall gfx city should display?
+  Which wall gfx city should display?
 **************************************************************************/
-static int city_got_citywalls(const struct city *pcity)
+static int city_citywalls_gfx(const struct city *pcity)
 {
   int walls = get_city_bonus(pcity, EFT_VISIBLE_WALLS);
 
@@ -2102,8 +2134,8 @@ void broadcast_city_info(struct city *pcity)
   players_iterate(pplayer) {
     if (can_player_see_city_internals(pplayer, pcity)) {
       if (!send_city_suppressed || pplayer != powner) {
-        update_dumb_city(powner, pcity);
-        lsend_packet_city_info(powner->connections, &packet, FALSE);
+        update_dumb_city(pplayer, pcity);
+        lsend_packet_city_info(pplayer->connections, &packet, FALSE);
       }
     } else {
       if (player_can_see_city_externals(pplayer, pcity)) {
@@ -2422,7 +2454,7 @@ void package_city(struct city *pcity, struct packet_city_info *packet,
   packet->did_sell = pcity->did_sell;
   packet->was_happy = pcity->was_happy;
 
-  packet->walls = city_got_citywalls(pcity);
+  packet->walls = city_citywalls_gfx(pcity);
   packet->style = pcity->style;
   packet->city_image = get_city_bonus(pcity, EFT_CITY_IMAGE);
 
@@ -2452,7 +2484,7 @@ bool update_dumb_city(struct player *pplayer, struct city *pcity)
   /* pcity->client.occupied isn't used at the server, so we go straight to the
    * unit list to check the occupied status. */
   bool occupied = (unit_list_size(pcenter->units) > 0);
-  bool walls = city_got_citywalls(pcity);
+  int walls = city_citywalls_gfx(pcity);
   bool happy = city_happy(pcity);
   bool unhappy = city_unhappy(pcity);
   int style = pcity->style;

@@ -16,6 +16,11 @@ AC_CANONICAL_HOST
 AC_USE_SYSTEM_EXTENSIONS
 AC_C_BIGENDIAN
 
+AC_SYS_LARGEFILE
+dnl AC_SYS_YEAR2038() added in autoconf-2.73
+m4_ifdef([AC_SYS_YEAR2038],
+   [AC_SYS_YEAR2038])
+
 BUG_URL="$PACKAGE_BUGREPORT"
 WIKI_URL="http://www.freeciv.org/"
 MAIL_ADDRESS="freeciv-dev AT freelists.org"
@@ -285,9 +290,15 @@ fi
 
 AC_ARG_WITH([readline],
   AS_HELP_STRING([--with-readline], [support fancy command line editing]),
-WITH_READLINE=$withval,	dnl yes/no - required to use / never use
-WITH_READLINE="maybe"	dnl maybe  - use if found [default]
+[WITH_READLINE=$withval], dnl yes/no - required to use / never use
+[WITH_READLINE="maybe"] dnl maybe  - use if found [default]
 )
+
+AC_ARG_WITH([iconv],
+  AS_HELP_STRING([--without-iconv], [disable check for iconv]),
+[if test x$withval = xno ; then
+  iconv_disabled=true
+fi])
 
 FOLLOWTAG=${DEFAULT_FOLLOW_TAG}
 AC_ARG_WITH([followtag],
@@ -580,13 +591,19 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_LN_S
 AC_DISABLE_SHARED
+
+dnl AC_PROG_AR() added in autoconf-2.72
+m4_ifdef([AC_PROG_AR],
+   [AC_PROG_AR],
+   [m4_ifdef([AM_PROG_AR], [AM_PROG_AR], [AC_CHECK_TOOL([AR], [ar])])])
+
 dnl Replace AC_PROG_LIBTOOL with LT_INIT when minimum libtool
 dnl version 2.2
-m4_ifdef([AM_PROG_AR], [AM_PROG_AR], [AC_CHECK_TOOL([AR], [ar])])
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL)
+
 if test -z $AR; then
-	AC_MSG_ERROR([*** 'ar' missing.  Install binutils, fix your \$PATH, or set \$AR manually. ***])
+  AC_MSG_ERROR([*** 'ar' missing. Install binutils, fix your \$PATH, or set \$AR manually. ***])
 fi
 
 AM_PROG_CC_C_O
@@ -606,14 +623,16 @@ AC_PROG_MAKE_SET
 dnl Check for libiconv (which is usually included in glibc, but may be
 dnl distributed separately).  The libcharset check must come after the
 dnl iconv check.  This whole thing must come before the gettext check below.
-AM_ICONV
-FC_LIBCHARSET
-AM_LANGINFO_CODESET
-if test "$am_cv_func_iconv" != yes; then
-  AC_MSG_ERROR([Iconv is missing. You can get libiconv from http://gnu.org/, \
+if test "x$iconv_disabled" != "xtrue" ; then
+  AM_ICONV
+  FC_LIBCHARSET
+  AM_LANGINFO_CODESET
+  if test "$am_cv_func_iconv" != yes; then
+    AC_MSG_ERROR([Iconv is missing. You can get libiconv from http://gnu.org/, \
 or try using --with-libiconv-prefix.])
+  fi
+  LIBS="$LIBS $LIBICONV"
 fi
-LIBS="$LIBS $LIBICONV"
 
 dnl I18n support
 ALL_LINGUAS="ar bg cs ca da de el en_GB eo es et fa fi fr ga gd he hu id it ja 
@@ -637,10 +656,15 @@ PKG_PROG_PKG_CONFIG
 if test "x$PKG_CONFIG" = "x" ; then
   AC_MSG_ERROR([pkg-config not found])
 fi
-PKG_CHECK_MODULES([CURL], [libcurl >= 7.12.1],,
-    [AC_MSG_ERROR([libcurl development files required])])
-UTILITY_CFLAGS="${UTILITY_CFLAGS} ${CURL_CFLAGS}"
-UTILITY_LIBS="${UTILITY_LIBS} ${CURL_LIBS}"
+
+PKG_CHECK_MODULES([CURL_MIME_API], [libcurl > 7.56.0],
+  [UTILITY_CFLAGS="${UTILITY_CFLAGS} ${CURL_MIME_API_CFLAGS}"
+   UTILITY_LIBS="${UTILITY_LIBS} ${CURL_MIME_API_LIBS}"
+  AC_DEFINE([HAVE_CURL_MIME_API], [1], [libcurl has the mime api])],
+  [PKG_CHECK_MODULES([CURL], [libcurl >= 7.12.1],
+    [UTILITY_CFLAGS="${UTILITY_CFLAGS} ${CURL_CFLAGS}"
+     UTILITY_LIBS="${UTILITY_LIBS} ${CURL_LIBS}"],
+    [AC_MSG_ERROR([libcurl development files required])])])
 
 AC_ARG_ENABLE([xml-registry],
   AS_HELP_STRING([--enable-xml-registry], [build xml-backend for registry (WIP)]),
@@ -667,10 +691,17 @@ FC_DEBUG
 dnl check profiling
 FC_GPROF
 
+dnl Detect flags to be used in configure tests that should fail on warnings
+WERROR_C_TEST_FLAGS=""
+WERROR_CXX_TEST_FLAGS=""
+FC_C_FLAGS([-Werror -Wall], [], [WERROR_C_TEST_FLAGS])
+FC_CXX_FLAGS([-Werror -Wall], [], [WERROR_CXX_TEST_FLAGS])
+
 AC_C99_VARIADIC_MACROS
 AC_C99_VARIABLE_ARRAYS
 AC_C99_INITIALIZERS
 AC_C99_STDINT_H
+FC_C99_VA_COPY
 
 FC_INITIALIZER_BRACES
 
@@ -854,17 +885,30 @@ if test x$crosser != xyes ; then
   FC_C_FLAGS([-pthread], [], [CFLAGS])
   FC_LD_FLAGS([-pthread], [], [LIBS])
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <pthread.h>]],
-    [[return pthread_create(NULL, NULL, NULL, NULL);]])],
-    [AC_DEFINE([FREECIV_HAVE_PTHREAD], [1], [Use pthreads as thread implementation])
-    thread_impl=pthreads
+    [[void *(*srout)(void *);
+void *arg;
+return pthread_create(NULL, NULL, srout, arg);]])],
+    [thread_impl=pthreads],
+    [LIBS="$LIBS -lpthread"
+     AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <pthread.h>]],
+       [[void *(*srout)(void *);
+void *arg;
+return pthread_create(NULL, NULL, srout, arg);]])],
+       [thread_impl=pthreads])])
+
+  if test $thread_impl = pthreads ; then
+    AC_DEFINE([FREECIV_HAVE_PTHREAD], [1], [Use pthreads as thread implementation])
     AC_MSG_RESULT([pthreads])
-    AC_DEFINE([FREECIV_HAVE_THREAD_COND], [1], [Has thread condition variable implementation])])
+    AC_DEFINE([FREECIV_HAVE_THREAD_COND], [1], [Has thread condition variable implementation])
     thread_cond=true
+  else
+    LIBS="$LIBS_SAVE"
+  fi
 fi
 
 if test "x$thread_impl" = "xnone" ; then
   CFLAGS="$CFLAGS_SAVE"
-  LDFLAGS="$LDFLAGS_SAVE"
+  LIBS="$LIBS_SAVE"
 
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <windows.h>]],
     [[CreateThread(NULL, 0, NULL, NULL, 0, NULL);]])],
@@ -1352,9 +1396,9 @@ CPPFLAGS="$CPPFLAGS -Werror $EXTRA_DEBUG_CFLAGS"
 AC_CHECK_FUNCS([_mkdir])
 CPPFLAGS="$fc_save_CPPFLAGS"
 
-AC_MSG_CHECKING(for working gettimeofday)
-  FC_CHECK_GETTIMEOFDAY_RUNTIME(,AC_DEFINE([HAVE_GETTIMEOFDAY], [1],
-	[Define if the gettimeofday function works and is sane.]),)
+FC_CHECK_GETTIMEOFDAY_RUNTIME([],
+  [AC_DEFINE([HAVE_GETTIMEOFDAY], [1],
+    [Define if the gettimeofday function works and is sane.])])
 
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <netinet/in.h>]],
 [[struct ip_mreqn req; req.imr_ifindex = 0;]])],
@@ -1462,6 +1506,8 @@ feature_syslua=missing
 sys_lua=false])])])
 fi
 
+AC_CHECK_FUNCS([localtime_r])
+
 if test "x$sys_lua" != "xtrue" ; then
   dnl Checks needed for included lua.
   gl_FUNC_MKSTEMP
@@ -1469,7 +1515,7 @@ if test "x$sys_lua" != "xtrue" ; then
     dnl if only "guessing yes", do not try to use mkstemp, but fallback
     AC_DEFINE([HAVE_MKSTEMP], [1], [Have working mkstemp])
   fi
-  AC_CHECK_FUNCS([popen pclose _longjmp _setjmp gmtime_r localtime_r])
+  AC_CHECK_FUNCS([popen pclose _longjmp _setjmp gmtime_r])
 
   LUA_CFLAGS="-I\$(top_srcdir)/dependencies/lua-5.3/src"
   LUA_LIBS="\$(top_builddir)/dependencies/lua-5.3/src/liblua.la"
@@ -1566,6 +1612,8 @@ dnl Check this when -Werror is already set, if we're going to set it
 FC_VALUE_AFTER_EXIT
 
 if test "x$gui_xaw" = "xyes" ; then
+  _CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS $WERROR_C_TEST_FLAGS"
   AC_CACHE_CHECK([['const' for XawListChange()]], [ac_cv_const_for_xaw_list_change],
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <X11/Xaw/List.h>
 ]],
@@ -1582,6 +1630,7 @@ XawListChange(NULL, test_strings, 0, 0, False);])],
   else
     AC_DEFINE([CONST_FOR_XAW_LIST_CHANGE], [], [[Do not use const for XawListChange() parameter]])
   fi
+  CFLAGS="$_CFLAGS"
 fi
 
 dnl Rebuild 'configure' whenever fc_version changes, if maintainer mode enabled.
@@ -1799,7 +1848,7 @@ AC_MSG_NOTICE([
   Build freeciv server:  $server
     AI modules support:    $enable_aimodules
     Database support:      $enable_fcdb
-      mysql:                 $fcdb_mysql
+      mysql/mariadb:         $fcdb_mysql
       postgres:              $fcdb_postgres
       sqlite3:               $fcdb_sqlite3
 

@@ -16,6 +16,8 @@
 #endif
 
 /* utility */
+#include "astring.h"
+#include "fciconv.h"
 #include "shared.h"
 
 /* common */
@@ -48,30 +50,40 @@ struct functions *fc_interface_funcs(void)
 }
 
 /**************************************************************************
-  Test and initialize the functions. The existence of all functions should
-  be checked!
+  Initialize libfreeciv.
+  With check_fc_interface, also tests and initialize the functions.
 **************************************************************************/
-void fc_interface_init(void)
+void libfreeciv_init(bool check_fc_interface)
 {
-  fc_funcs = &fc_functions;
+  fc_astr_init();
+  fc_support_init();
+  init_nls();
 
-  /* Test the existence of each required function here! */
-  fc_assert_exit(fc_funcs->player_tile_vision_get);
-  fc_assert_exit(fc_funcs->gui_color_free);
+  if (check_fc_interface) {
+    fc_funcs = &fc_functions;
 
-  fc_funcs_defined = TRUE;
+    /* Test the existence of each required function here! */
+    fc_assert_exit(fc_funcs->player_tile_vision_get);
+    fc_assert_exit(fc_funcs->gui_color_free);
 
-  setup_real_activities_array();
+    fc_funcs_defined = TRUE;
+
+    setup_real_activities_array();
+  }
 }
 
 /**************************************************************************
   Free misc resources allocated for libfreeciv.
 **************************************************************************/
-void free_libfreeciv(void)
+void libfreeciv_free(void)
 {
   diplrel_mess_close();
   free_data_dir_names();
   free_multicast_group();
   free_user_home_dir();
   free_fileinfo_data();
+  free_nls();
+  fc_iconv_close();
+  fc_support_free();
+  fc_astr_free();
 }

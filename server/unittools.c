@@ -1157,9 +1157,9 @@ void bounce_unit(struct unit *punit, bool verbose)
    * Try to bounce transported units. */
   if (0 < get_transporter_occupancy(punit)) {
     pcargo_units = unit_transport_cargo(punit);
-    unit_list_iterate(pcargo_units, pcargo) {
+    unit_list_iterate_safe(pcargo_units, pcargo) {
       bounce_unit(pcargo, verbose);
-    } unit_list_iterate_end;
+    } unit_list_iterate_safe_end;
   }
 
   if (verbose) {
@@ -1168,9 +1168,9 @@ void bounce_unit(struct unit *punit, bool verbose)
                   _("Disbanded your %s."),
                   unit_tile_link(punit));
   }
+
   wipe_unit(punit, ULR_STACK_CONFLICT, NULL);
 }
-
 
 /**************************************************************************
   Throw pplayer's units from non allied cities
@@ -1256,10 +1256,10 @@ static void resolve_stack_conflicts(struct player *pplayer,
           bounce_unit(aunit, verbose);
         }
       } unit_list_iterate_safe_end;
-    }    
+    }
   } unit_list_iterate_safe_end;
 }
-				
+
 /**************************************************************************
   When in civil war or an alliance breaks there will potentially be units 
   from both sides coexisting on the same squares.  This routine resolves 
@@ -1588,9 +1588,11 @@ static void server_remove_unit_full(struct unit *punit, bool transported,
 
   /* Clear the vision before sending unit remove. Else, we might duplicate
    * the PACKET_UNIT_REMOVE if we lose vision of the unit tile. */
-  vision_clear_sight(punit->server.vision);
-  vision_free(punit->server.vision);
-  punit->server.vision = NULL;
+  if (punit->server.vision != NULL) {
+    vision_clear_sight(punit->server.vision);
+    vision_free(punit->server.vision);
+    punit->server.vision = NULL;
+  }
 
   packet.unit_id = punit->id;
   /* Send to onlookers. */
@@ -3684,9 +3686,11 @@ bool unit_move(struct unit *punit, struct tile *pdesttile, int move_cost,
 
   /* Clear old vision. */
   unit_move_data_list_iterate(plist, pmove_data) {
-    vision_clear_sight(pmove_data->old_vision);
-    vision_free(pmove_data->old_vision);
-    pmove_data->old_vision = NULL;
+    if (pmove_data->old_vision != NULL) {
+      vision_clear_sight(pmove_data->old_vision);
+      vision_free(pmove_data->old_vision);
+      pmove_data->old_vision = NULL;
+    }
   } unit_move_data_list_iterate_end;
 
   /* Move consequences. */

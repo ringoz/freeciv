@@ -1608,10 +1608,10 @@ static void player_load_units(struct player *plr, int plrno,
             } else {
               log_error("Cannot find base %d for %s to build",
                         base, unit_rule_name(punit));
-              base = base_number(get_base_by_gui_type(BASE_GUI_FORTRESS, NULL, NULL));
+              order_base = get_base_by_gui_type(BASE_GUI_FORTRESS, NULL, NULL);
             }
 
-            order->target = extra_number(base_extra_get(base_by_number(base)));
+            order->target = extra_number(base_extra_get(order_base));
           } else {
             order->target = EXTRA_NONE;
           }
@@ -3951,7 +3951,6 @@ static void game_load_internal(struct section_file *file)
 
   if (!game.info.is_new_game) {
     int *worked_tiles = NULL; /* temporary map for worked tiles */
-    int loaded_players = 0;
     int players;
 
     /* Update time has been saved as year in legacysave.c */
@@ -4000,14 +3999,11 @@ static void game_load_internal(struct section_file *file)
                                      default_ai_type_name(), NULL,
                                      FALSE);
       server_player_init(pplayer, FALSE, FALSE);
-      loaded_players++;
     } player_slots_iterate_end;
 
     /* check number of players */
-    {
-      int nplayers = secfile_lookup_int_default(file, 0, "game.nplayers");
-
-      fc_assert_ret(player_count() == nplayers);
+    if (secfile_lookup_int_default(file, 0, "game.nplayers") != player_count()) {
+      return; /* FIXME: Should this be fatal? */
     }
 
     /* Load team informations. All players should now have teams. This is

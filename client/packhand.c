@@ -188,7 +188,7 @@ static struct unit *unpackage_unit(const struct packet_unit_info *packet)
 					   packet->veteran);
 
   /* Owner, veteran, and type fields are already filled in by
-   * unit_virtual_create. */
+   * unit_virtual_create() */
   punit->nationality = player_by_number(packet->nationality);
   punit->id = packet->id;
   unit_tile_set(punit, index_to_tile(packet->tile));
@@ -260,7 +260,7 @@ static struct unit *unpackage_unit(const struct packet_unit_info *packet)
 }
 
 /****************************************************************************
-  Unpackage a short_unit_info packet.  This extracts a limited amount of
+  Unpackage a short_unit_info packet. This extracts a limited amount of
   information about the unit, and is sent for units we shouldn't know
   everything about (like our enemies' units).
 
@@ -275,9 +275,9 @@ unpackage_short_unit(const struct packet_unit_short_info *packet)
   struct unit *punit = unit_virtual_create(player_by_number(packet->owner),
 					   NULL,
 					   utype_by_number(packet->type),
-					   FALSE);
+					   0);
 
-  /* Owner and type fields are already filled in by unit_virtual_create. */
+  /* Owner and type fields are already filled in by unit_virtual_create() */
   punit->id = packet->id;
   unit_tile_set(punit, index_to_tile(packet->tile));
   punit->facing = packet->facing;
@@ -863,8 +863,8 @@ void handle_city_info(const struct packet_city_info *packet)
 
   /* Update the panel text (including civ population). */
   update_info_label();
-  
-  /* update caravan dialog */
+
+  /* Update caravan dialog */
   if ((production_changed || shield_stock_changed)
       && action_selection_target_city() == pcity->id) {   
     dsend_packet_unit_get_actions(&client.conn,
@@ -939,12 +939,12 @@ static void city_packet_common(struct city *pcity, struct tile *pcenter,
 
       unit_list_destroy(pcity->client.info_units_present);
       pcity->client.info_units_present =
-          pcity->client.collecting_info_units_present;
+        pcity->client.collecting_info_units_present;
       pcity->client.collecting_info_units_present = NULL;
 
       unit_list_destroy(pcity->client.info_units_supported);
       pcity->client.info_units_supported =
-          pcity->client.collecting_info_units_supported;
+        pcity->client.collecting_info_units_supported;
       pcity->client.collecting_info_units_supported = NULL;
     } else {
       /* We didn't get any unit, let's clear the unit lists. */
@@ -1087,6 +1087,9 @@ void handle_city_short_info(const struct packet_city_short_info *packet)
     }
   }
   pcity->client.walls = packet->walls;
+  if (pcity->client.walls > NUM_WALL_TYPES) {
+    pcity->client.walls = NUM_WALL_TYPES;
+  }
   pcity->style = packet->style;
   pcity->client.city_image = packet->city_image;
 
@@ -1881,6 +1884,40 @@ static bool handle_unit_packet_common(struct unit *packet_unit)
 }
 
 /****************************************************************************
+  Receive an investigate_started packet
+
+  Can't rely on generic packet_processing_started, as that works for
+  the requesting connection only, and not for observers.
+****************************************************************************/
+void handle_investigate_started(int unit_id, int city_id)
+{
+  struct city *pcity = game_city_by_number(city_id);
+
+  if (!pcity) {
+    log_error("Investigate city: unknown city id %d!",
+              city_id);
+    return;
+  }
+
+  /* Start collecting supported and present units. */
+
+  /* Ensure we are not already in an investigate cycle. */
+  fc_assert(pcity->client.collecting_info_units_supported == NULL);
+  fc_assert(pcity->client.collecting_info_units_present == NULL);
+  pcity->client.collecting_info_units_supported =
+    unit_list_new_full(unit_virtual_destroy);
+  pcity->client.collecting_info_units_present =
+    unit_list_new_full(unit_virtual_destroy);
+}
+
+/****************************************************************************
+  Receive an investigate_finished packet
+****************************************************************************/
+void handle_investigate_finished(int unit_id, int city_id)
+{
+}
+
+/****************************************************************************
   Receive a short_unit info packet.
 ****************************************************************************/
 void handle_unit_short_info(const struct packet_unit_short_info *packet)
@@ -1903,29 +1940,45 @@ void handle_unit_short_info(const struct packet_unit_short_info *packet)
       return;
     }
 
-    /* New serial number: start collecting supported and present units. */
-    if (last_serial_num
-        != client.conn.client.request_id_of_currently_handled_packet) {
-      last_serial_num =
+    if (!has_capability("obsinv", client.conn.capability)) {
+      /* New serial number: start collecting supported and present units. */
+      if (last_serial_num
+          != client.conn.client.request_id_of_currently_handled_packet) {
+        last_serial_num =
           client.conn.client.request_id_of_currently_handled_packet;
-      /* Ensure we are not already in an investigate cycle. */
-      fc_assert(pcity->client.collecting_info_units_supported == NULL);
-      fc_assert(pcity->client.collecting_info_units_present == NULL);
-      pcity->client.collecting_info_units_supported =
+        /* Ensure we are not already in an investigate cycle. */
+        fc_assert(pcity->client.collecting_info_units_supported == NULL);
+        fc_assert(pcity->client.collecting_info_units_present == NULL);
+        pcity->client.collecting_info_units_supported =
           unit_list_new_full(unit_virtual_destroy);
-      pcity->client.collecting_info_units_present =
+        pcity->client.collecting_info_units_present =
           unit_list_new_full(unit_virtual_destroy);
+      }
     }
 
-    /* Okay, append a unit struct to the proper list. */
+    /* Append a unit struct to the proper list. */
     punit = unpackage_short_unit(packet);
     if (packet->packet_use == UNIT_INFO_CITY_SUPPORTED) {
-      fc_assert(pcity->client.collecting_info_units_supported != NULL);
-      unit_list_append(pcity->client.collecting_info_units_supported, punit);
+      if (pcity->client.collecting_info_units_supported != NULL) {
+        unit_list_append(pcity->client.collecting_info_units_supported, punit);
+      } else {
+        /* pcity->client.collecting_info_units_supported should not be NULL,
+         * but older servers never started the sequence for observers. */
+        fc_assert_msg(!(has_capability("obsinv", client.conn.capability)
+                        && client_is_observer()),
+                      "Supported units list NULL");
+      }
     } else {
       fc_assert(packet->packet_use == UNIT_INFO_CITY_PRESENT);
-      fc_assert(pcity->client.collecting_info_units_present != NULL);
-      unit_list_append(pcity->client.collecting_info_units_present, punit);
+      if (pcity->client.collecting_info_units_present != NULL) {
+        unit_list_append(pcity->client.collecting_info_units_present, punit);
+      } else {
+        /* pcity->client.collecting_info_units_present should not be NULL,
+         * but older servers never started the sequence for observers. */
+        fc_assert_msg(!(has_capability("obsinv", client.conn.capability)
+                        && client_is_observer()),
+                      "Present units list NULL");
+      }
     }
 
     /* Done with special case. */
@@ -4305,7 +4358,8 @@ void handle_unit_actions(const struct packet_unit_actions *packet)
   } else {
     /* This was a background request. */
 
-    if (action_selection_actor_unit() == actor_unit->id) {
+    if (actor_unit != NULL
+        && action_selection_actor_unit() == actor_unit->id) {
       /* The situation may have changed. */
       action_selection_refresh(actor_unit,
                                target_city, target_unit, target_tile,

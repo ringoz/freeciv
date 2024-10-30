@@ -890,7 +890,7 @@ void fc_client::update_server_list(enum server_scan_type sstype,
   sel->clearContents();
   row = 0;
   server_list_iterate(list, pserver) {
-    char buf[20];
+    char buf[35];
     int tmp;
     QString tstring;
 
@@ -902,6 +902,7 @@ void fc_client::update_server_list(enum server_scan_type sstype,
       fc_snprintf(buf, sizeof(buf), "%d", pserver->humans);
     } else {
       strncpy(buf, _("Unknown"), sizeof(buf) - 1);
+      buf[sizeof(buf) - 1] = '\0';
     }
 
     tmp = pserver->port;
@@ -1726,7 +1727,7 @@ void fc_client::update_start_page()
         item->setData(col, Qt::DecorationRole, *pixmap);
         break;
       case 4:
-        if (!player_has_color(tileset, pplayer)) {
+        if (!player_has_color(pplayer)) {
           break;
         }
         pixmap = new QPixmap(
@@ -1853,38 +1854,38 @@ void fc_client::update_buttons()
 
   /* Ready button */
   if (can_client_control()) {
-    sensitive = true;
+    sensitive = client_player()->is_alive;
     if (client_player()->is_ready) {
       text = _("Not ready");
     } else {
       int num_unready = 0;
 
-      players_iterate(pplayer) {
+      players_iterate_alive(pplayer) {
         if (!pplayer->ai_controlled && !pplayer->is_ready) {
           num_unready++;
         }
-      } players_iterate_end;
+      } players_iterate_alive_end;
 
       if (num_unready > 1) {
         text = _("Ready");
       } else {
         /* We are the last unready player so clicking here will
          * immediately start the game. */
-        text = ("Start");
+        text = _("Start");
       }
     }
   } else {
     text = _("Start");
     if (can_client_access_hack() && client.conn.observer) {
       sensitive = true;
-      players_iterate(plr) {
+      players_iterate_alive(plr) {
         if (!plr->ai_controlled) {
           /* There's human controlled player(s) in game, so it's their
            * job to start the game. */
           sensitive = false;
           break;
         }
-      } players_iterate_end;
+      } players_iterate_alive_end;
     } else {
       sensitive = false;
     }

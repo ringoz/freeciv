@@ -15,6 +15,8 @@
 #include <fc_config.h>
 #endif
 
+#include "fc_prehdrs.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1196,7 +1198,7 @@ static bool read_init_script_real(struct connection *caller,
       && (script_file = fc_fopen(real_filename, "r"))) {
     char buffer[MAX_LEN_CONSOLE_LINE];
 
-    /* the size is set as to not overflow buffer in handle_stdin_input */
+    /* The size is set as to not overflow buffer in handle_stdin_input */
     while (fgets(buffer, MAX_LEN_CONSOLE_LINE - 1, script_file)) {
       /* Execute script contents with same permissions as caller */
       handle_stdin_input_real(caller, buffer, check, read_recursion + 1);
@@ -1242,9 +1244,9 @@ static bool write_init_script(char *script_filename)
   if (is_reg_file_for_access(real_filename, TRUE)
       && (script_file = fc_fopen(real_filename, "w"))) {
     fprintf(script_file,
-	"#FREECIV SERVER COMMAND FILE, version %s\n", VERSION_STRING);
+            "#FREECIV SERVER COMMAND FILE, version %s\n", VERSION_STRING);
     fputs("# These are server options saved from a running freeciv-server.\n",
-	script_file);
+          script_file);
 
     /* first rulesetdir. Setting rulesetdir resets the settings to their
      * default value, so they would be lost if placed before this.  */
@@ -1273,7 +1275,7 @@ static bool write_init_script(char *script_filename)
       fprintf(script_file, "metamessage %s\n", get_meta_message_string());
     }
 
-    /* then, the 'set' option settings */
+    /* Then, the 'set' option settings */
 
     settings_iterate(SSET_ALL, pset) {
       fprintf(script_file, "set %s \"%s\"\n", setting_name(pset),
@@ -4621,7 +4623,7 @@ static bool reset_command(struct connection *caller, char *arg, bool check,
               _("Reset all settings and rereading the server start "
                 "script."));
     settings_reset();
-    /* load initial script */
+    /* Load initial script */
     if (NULL != srvarg.script_filename
         && !read_init_script_real(NULL, srvarg.script_filename, TRUE, FALSE,
                                   read_recursion + 1)) {
@@ -4703,7 +4705,7 @@ static const char *lua_accessor(int i)
 *****************************************************************************/
 static bool lua_command(struct connection *caller, char *arg, bool check)
 {
-  FILE *script_file;
+  struct stat statbuf;
   const char extension[] = ".lua", *real_filename = NULL;
   char luafile[4096], tilde_filename[4096];
   char *tokens[1], *luaarg = NULL;
@@ -4806,7 +4808,7 @@ static bool lua_command(struct connection *caller, char *arg, bool check)
               _("Loading Freeciv script file '%s'."), real_filename);
 
     if (is_reg_file_for_access(real_filename, FALSE)
-        && (script_file = fc_fopen(real_filename, "r"))) {
+        && !fc_stat(real_filename, &statbuf)) {
       ret = script_server_do_file(caller, real_filename);
       goto cleanup;
     } else {

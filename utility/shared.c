@@ -1841,6 +1841,15 @@ bool make_dir(const char *pathname)
 
   path = interpret_tilde_alloc(pathname);
   dir = path;
+
+  if (*dir == '/') {
+    /* Don't consider root as directory separator, but skip it. */
+    dir++;
+  } else if (dir[0] != '\0' && dir[1] == ':' && dir[2] == '\\') {
+    /* Don't consider Windows Drive a directory to create, but skip it. */
+    dir += 3;
+  }
+
   do {
     dir = strchr(dir, DIR_SEPARATOR_CHAR);
     /* We set the current / with 0, and restore it afterwards */

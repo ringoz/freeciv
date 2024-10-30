@@ -425,10 +425,9 @@ protected:
 ****************************************************************************/
 class city_dialog: public qfc_dialog
 {
-
   Q_OBJECT
 
-  bool happines_shown;
+  bool happiness_shown;
   QHBoxLayout *single_page_layout;
   QHBoxLayout *happiness_layout;
   QSplitter *prod_unit_splitter;
@@ -472,7 +471,6 @@ class city_dialog: public qfc_dialog
   QPushButton *work_prev_but;
   QPushButton *work_add_but;
   QPushButton *work_rem_but;
-  QPushButton *but_menu_worklist;
   QPushButton *happiness_button;
   QPushButton *zoom_in_button;
   QPushButton *zoom_out_button;
@@ -519,7 +517,6 @@ private slots:
   void show_happiness();
   void buy();
   void dbl_click_p(QTableWidgetItem *item);
-  void delete_prod();
   void item_selected(const QItemSelection &sl, const QItemSelection &ds);
   void clear_worklist();
   void save_worklist();

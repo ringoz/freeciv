@@ -374,7 +374,7 @@
 #define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the `localtime_r' function. */
-/* #undef HAVE_LOCALTIME_R */
+#define HAVE_LOCALTIME_R 1
 
 /* Define to 1 if you have the <lzma.h> header file. */
 /* #undef HAVE_LZMA_H */
@@ -636,7 +636,7 @@ const char *osGetLocale(void);
 #define PACKAGE_NAME "Freeciv"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Freeciv 2.6.6"
+#define PACKAGE_STRING "Freeciv 2.6.11"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "freeciv"
@@ -645,10 +645,10 @@ const char *osGetLocale(void);
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.6.6"
+#define PACKAGE_VERSION "2.6.11"
 
 /* Patch version */
-#define PATCH_VERSION 6
+#define PATCH_VERSION 11
 
 /* Qt debugging support disabled */
 #define QT_NO_DEBUG 1
@@ -688,13 +688,13 @@ const char *osGetLocale(void);
 
 
 /* Version number of package */
-#define VERSION "2.6.6"
+#define VERSION "2.6.11"
 
 /* Version label */
 #define VERSION_LABEL "+"
 
 /* Version string */
-#define VERSION_STRING "2.6.6"
+#define VERSION_STRING "2.6.11"
 
 /* Informational URL */
 #define WIKI_URL "http://www.freeciv.org/"

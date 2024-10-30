@@ -340,9 +340,12 @@ int client_main(int argc, char *argv[])
 # endif /* FREECIV_NDEBUG */
 #endif /* WIN32_NATIVE */
 
-  i_am_client(); /* Tell to libfreeciv that we are client */
-
+  /* fc_interface_init_client() includes low level support like
+   * guaranteeing that fc_vsnprintf() will work after it,
+   * so this need to be early. */
   fc_interface_init_client();
+
+  i_am_client(); /* Tell to libfreeciv that we are client */
 
   game.client.ruleset_init = FALSE;
 
@@ -355,7 +358,6 @@ int client_main(int argc, char *argv[])
     init_ai(ai);
   }
 
-  init_nls();
 #ifdef ENABLE_NLS
   (void) bindtextdomain("freeciv-nations", get_locale_dir());
 #endif
@@ -670,7 +672,7 @@ int client_main(int argc, char *argv[])
   if (forced_tileset_name[0] != '\0') {
     if (!tilespec_try_read(forced_tileset_name, TRUE, -1, TRUE)) {
       log_error(_("Can't load requested tileset %s!"), forced_tileset_name);
-      client_exit();
+      client_exit(EXIT_FAILURE);
       return EXIT_FAILURE;
     }
   } else {
@@ -686,7 +688,7 @@ int client_main(int argc, char *argv[])
   ui_main(argc, argv);
 
   /* termination */
-  client_exit();
+  client_exit(EXIT_SUCCESS);
 
   /* not reached */
   return EXIT_SUCCESS;
@@ -708,7 +710,7 @@ static void log_option_save_msg(enum log_level lvl, const char *msg, ...)
   Main client execution stop function. This calls ui_exit() and not the
   other way around.
 **************************************************************************/
-void client_exit(void)
+void client_exit(int return_value)
 {
   if (client_state() >= C_S_PREPARING) {
     attribute_flush();
@@ -727,6 +729,9 @@ void client_exit(void)
 
   ui_exit();
 
+  /* Play the exit sound while audio system dependencies still up. */
+  audio_shutdown(TRUE);
+
   script_client_free();
 
   editor_free();
@@ -740,18 +745,16 @@ void client_exit(void)
   conn_list_destroy(game.est_connections);
 
   registry_module_close();
-  free_libfreeciv();
-  free_nls();
+  libfreeciv_free();
 
   backtrace_deinit();
   log_close();
   cmdline_option_values_free();
 
 #ifndef NANOCIV
-  exit(EXIT_SUCCESS);
+  exit(return_value);
 #endif
 }
-
 
 /**************************************************************************
   Handle packet received from server.
@@ -1369,12 +1372,13 @@ static void fc_interface_init_client(void)
 
   funcs->create_extra = NULL;
   funcs->destroy_extra = NULL;
+  funcs->destroy_city = NULL;
   funcs->player_tile_vision_get = client_map_is_known_and_seen;
   funcs->gui_color_free = color_free;
 
   /* Keep this function call at the end. It checks if all required functions
      are defined. */
-  fc_interface_init();
+  libfreeciv_init(TRUE);
 }
 
 /***************************************************************************

@@ -669,7 +669,7 @@ bool option_reset(struct option *poption)
 }
 
 /****************************************************************************
-  Set the function to call every time this option changes.  Can be NULL.
+  Set the function to call every time this option changes. Can be NULL.
 ****************************************************************************/
 void option_set_changed_callback(struct option *poption,
                                  void (*callback) (struct option *))
@@ -2554,7 +2554,7 @@ static struct client_option client_options[] = {
                      "in the city dialog, the Economy report or the Units "
                      "report."),
                   COC_FONT, GUI_GTK2,
-                  "Sans 9", NULL),
+                  "Sans 9", font_changed_callback),
   GEN_FONT_OPTION(gui_gtk2_font_comment_label, "comment_label",
                   N_("Comment Label"),
                   N_("This font is used to display comment labels, such as "
@@ -2775,7 +2775,7 @@ static struct client_option client_options[] = {
                      "in the city dialog, the Economy report or the Units "
                      "report."),
                   COC_FONT, GUI_GTK3,
-                  "Sans 9", NULL),
+                  "Sans 9", font_changed_callback),
   GEN_FONT_OPTION(gui_gtk3_font_comment_label, "comment_label",
                   N_("Comment Label"),
                   N_("This font is used to display comment labels, such as "
@@ -2996,7 +2996,7 @@ static struct client_option client_options[] = {
                      "in the city dialog, the Economy report or the Units "
                      "report."),
                   COC_FONT, GUI_GTK3_22,
-                  "Sans 9", NULL),
+                  "Sans 9", font_changed_callback),
   GEN_FONT_OPTION(gui_gtk3_22_font_comment_label, "comment_label",
                   N_("Comment Label"),
                   N_("This font is used to display comment labels, such as "
@@ -4509,14 +4509,18 @@ void handle_server_setting_bitwise
 static struct server_option *
     server_option_next_valid(struct server_option *poption)
 {
-  const struct server_option *const max = 
-    server_options + server_options_num;
+  if (server_options != NULL) {
+    const struct server_option *const max =
+      server_options + server_options_num;
 
-  while (NULL != poption && poption < max && !poption->is_visible) {
-    poption++;
+    while (NULL != poption && poption < max && !poption->is_visible) {
+      poption++;
+    }
+
+    return (poption < max ? poption : NULL);
   }
 
-  return (poption < max ? poption : NULL);
+  return NULL;
 }
 
 /****************************************************************************
@@ -5610,6 +5614,7 @@ static void desired_settable_option_send(struct option *poption)
 #define SPECHASH_IDATA_TYPE bool
 #define SPECHASH_UDATA_TO_IDATA FC_INT_TO_PTR
 #define SPECHASH_IDATA_TO_UDATA FC_PTR_TO_INT
+#define SPECHASH_VPTR_TO_IDATA  FC_PTR_TO_INT
 #include "spechash.h"
 #define dialog_options_hash_iterate(hash, column, visible)                  \
   TYPED_HASH_ITERATE(const char *, intptr_t, hash, column, visible)
@@ -6164,7 +6169,9 @@ static void view_option_changed_callback(struct option *poption)
 static void manual_turn_done_callback(struct option *poption)
 {
   update_turn_done_button_state();
-  if (!gui_options.ai_manual_turn_done && client.conn.playing->ai_controlled) {
+  if (!gui_options.ai_manual_turn_done
+      && client.conn.playing != NULL
+      && client.conn.playing->ai_controlled) {
     if (can_end_turn()) {
       user_ended_turn();
     }

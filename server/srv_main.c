@@ -172,15 +172,13 @@ struct civserver server;
 /* server state information */
 static enum server_states civserver_state = S_S_INITIAL;
 
-/* this global is checked deep down the netcode. 
+/* This global is checked deep down the netcode.
    packets handling functions can set it to none-zero, to
    force end-of-tick asap
 */
 bool force_end_of_sniff;
 
-#define IDENTITY_NUMBER_SIZE 250000
-BV_DEFINE(bv_identity_numbers, IDENTITY_NUMBER_SIZE);
-bv_identity_numbers identity_numbers_used;
+bv_id identity_numbers_used;
 
 /* server initialized flag */
 static bool has_been_srv_init = FALSE;
@@ -219,11 +217,14 @@ void init_game_seed(void)
 **************************************************************************/
 void srv_init(void)
 {
+  /* fc_interface_init_server() includes low level support like
+   * guaranteeing that fc_vsnprintf() will work after it,
+   * so this need to be early. */
+  fc_interface_init_server();
+
   i_am_server(); /* Tell to libfreeciv that we are server */
 
 #ifndef NANOCIV
-  /* NLS init */
-  init_nls();
 #ifdef ENABLE_NLS
   (void) bindtextdomain("freeciv-nations", get_locale_dir());
 #endif
@@ -1807,11 +1808,11 @@ void server_quit(void)
   registry_module_close();
   fc_destroy_mutex(&game.server.mutexes.city_list);
 #ifndef NANOCIV
-  free_libfreeciv();
-  free_nls();
+  libfreeciv_free();
 #endif
   con_log_close();
   cmdline_option_values_free();
+
   exit(EXIT_SUCCESS);
 }
 
@@ -2305,7 +2306,7 @@ void handle_player_ready(struct player *requestor,
   if (is_ready) {
     int num_ready = 0, num_unready = 0;
 
-    players_iterate(other_player) {
+    players_iterate_alive(other_player) {
       if (other_player->is_connected) {
 	if (other_player->is_ready) {
 	  num_ready++;
@@ -2313,7 +2314,8 @@ void handle_player_ready(struct player *requestor,
 	  num_unready++;
 	}
       }
-    } players_iterate_end;
+    } players_iterate_alive_end;
+
     if (num_unready > 0) {
       notify_conn(NULL, NULL, E_SETTING, ftc_server,
                   _("Waiting to start game: %d out of %d players "
@@ -3366,7 +3368,6 @@ void server_game_free(void)
 **************************************************************************/
 void srv_main(void)
 {
-  fc_interface_init_server();
   advisors_init();
 
   srv_prepare();
@@ -3444,12 +3445,13 @@ static void fc_interface_init_server(void)
 
   funcs->create_extra = create_extra;
   funcs->destroy_extra = destroy_extra;
+  funcs->destroy_city = remove_city;
   funcs->player_tile_vision_get = map_is_known_and_seen;
   funcs->gui_color_free = server_gui_color_free;
 
   /* Keep this function call at the end. It checks if all required functions
      are defined. */
-  fc_interface_init();
+  libfreeciv_init(TRUE);
 }
 
 /***************************************************************************

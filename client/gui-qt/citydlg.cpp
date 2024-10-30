@@ -65,9 +65,9 @@
 #include "citydlg.h"
 #include "colors.h"
 #include "fc_client.h"
+#include "gui_main.h"
 #include "hudwidget.h"
 
-extern QApplication *qapp;
 static bool city_dlg_created = false; /** defines if dialog for city has been
                                        * already created. It's created only
                                        * once per client
@@ -1480,7 +1480,7 @@ city_dialog::city_dialog(QWidget *parent): qfc_dialog(parent)
   small_font = fc_font::instance()->get_font(fonts::city_label);
   zoom = 1.0;
 
-  happines_shown = false;
+  happiness_shown = false;
   central_splitter = new QSplitter;
   central_splitter->setOpaqueResize(false);
   central_left_splitter = new QSplitter;
@@ -1742,7 +1742,6 @@ city_dialog::city_dialog(QWidget *parent): qfc_dialog(parent)
   work_but_layout->addWidget(work_next_but);
   work_but_layout->addWidget(work_prev_but);
   work_but_layout->addWidget(work_rem_but);
-  but_menu_worklist = new QPushButton;
   production_combo_p = new progress_bar(parent);
   production_combo_p->setToolTip(_("Click to change current production"));
   p_table_p = new QTableWidget;
@@ -1780,15 +1779,11 @@ city_dialog::city_dialog(QWidget *parent): qfc_dialog(parent)
   qgbprod->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   qgbprod->setLayout(vbox_layout);
 
-  but_menu_worklist->setText(_("Worklist menu"));
-  but_menu_worklist->setIcon(style()->standardIcon(
-                               QStyle::SP_FileLinkIcon));
   worklist_layout->setSpacing(0);
   worklist_layout->addWidget(qgbprod);
   connect(p_table_p,
           &QWidget::customContextMenuRequested, this,
           &city_dialog::display_worklist_menu);
-  connect(but_menu_worklist, &QAbstractButton::clicked, this, &city_dialog::delete_prod);
   connect(production_combo_p, &progress_bar::clicked, this, &city_dialog::show_targets);
   connect(work_add_but, &QAbstractButton::clicked, this, &city_dialog::show_targets_worklist);
   connect(work_prev_but, &QAbstractButton::clicked, this, &city_dialog::worklist_up);
@@ -2045,7 +2040,7 @@ void city_dialog::change_production(bool next)
 ****************************************************************************/
 void city_dialog::update_happiness_button()
 {
-  if (happines_shown) {
+  if (happiness_shown) {
     happiness_button->setToolTip(_("Show city production"));
   } else {
     happiness_button->setToolTip(_("Show happiness information"));
@@ -2059,7 +2054,7 @@ void city_dialog::show_happiness()
 {
   setUpdatesEnabled(false);
 
-  if (!happines_shown) {
+  if (!happiness_shown) {
     leftbot_layout->replaceWidget(prod_unit_splitter,
                                   happiness_widget,
                                   Qt::FindDirectChildrenOnly);
@@ -2077,10 +2072,9 @@ void city_dialog::show_happiness()
 
   setUpdatesEnabled(true);
   update();
-  happines_shown = !happines_shown;
+  happiness_shown = !happiness_shown;
   update_happiness_button();
 }
-
 
 /****************************************************************************
   Updates buttons/widgets which should be enabled/disabled
@@ -2094,7 +2088,6 @@ void city_dialog::update_disabled()
     buy_button->setDisabled(true);
     cma_enable_but->setDisabled(true);
     production_combo_p->setDisabled(true);
-    but_menu_worklist->setDisabled(true);
     current_units->setDisabled(true);
     supported_units->setDisabled(true);
     view->setDisabled(true);
@@ -2107,7 +2100,6 @@ void city_dialog::update_disabled()
     buy_button->setEnabled(true);
     cma_enable_but->setEnabled(true);
     production_combo_p->setEnabled(true);
-    but_menu_worklist->setEnabled(true);
     current_units->setEnabled(true);
     supported_units->setEnabled(true);
     view->setEnabled(true);
@@ -2166,6 +2158,13 @@ city_dialog::~city_dialog()
   supported_units->clear_layout();
   removeEventFilter(this);
   ::city_dlg_created = false;
+
+  // Delete the one widget that currently does NOT have a parent
+  if (happiness_shown) {
+    delete prod_unit_splitter;
+  } else {
+    delete happiness_widget;
+  }
 }
 
 /****************************************************************************
@@ -3074,16 +3073,6 @@ void city_dialog::setup_ui(struct city *qcity)
   production_combo_p->blockSignals(true);
   refresh();
   production_combo_p->blockSignals(false);
-
-}
-
-
-/****************************************************************************
-  Removes selected item from city worklist
-****************************************************************************/
-void city_dialog::delete_prod()
-{
-  display_worklist_menu(QCursor::pos());
 }
 
 /****************************************************************************
@@ -3092,6 +3081,7 @@ void city_dialog::delete_prod()
 void city_dialog::dbl_click_p(QTableWidgetItem *item)
 {
   struct worklist queue;
+
   city_get_queue(pcity, &queue);
 
   if (selected_row_p < 0 || selected_row_p > worklist_length(&queue)) {
@@ -3181,7 +3171,7 @@ void city_dialog::item_selected(const QItemSelection &sl,
 ****************************************************************************/
 void city_dialog::next_city()
 {
-  int size, i, j;
+  int size, i;
   struct city *other_pcity = NULL;
 
   if (NULL == client.conn.playing) {
@@ -3190,7 +3180,7 @@ void city_dialog::next_city()
 
   size = city_list_size(client.conn.playing->cities);
 
-  if (size == 1) {
+  if (size <= 1) {
     return;
   }
 
@@ -3200,10 +3190,13 @@ void city_dialog::next_city()
     }
   }
 
-  for (j = 1; j < size; j++) {
-    other_pcity = city_list_get(client.conn.playing->cities,
-                                (i + j + size) % size);
+  if (i >= size - 1) {
+    // Current city last in the list (size - 1) or disappeared (size)
+    other_pcity = city_list_get(client.conn.playing->cities, 0);
+  } else {
+    other_pcity = city_list_get(client.conn.playing->cities, i + 1);
   }
+
   center_tile_mapcanvas(other_pcity->tile);
   qtg_real_city_dialog_popup(other_pcity);
 }
@@ -3213,7 +3206,7 @@ void city_dialog::next_city()
 ****************************************************************************/
 void city_dialog::prev_city()
 {
-  int size, i, j;
+  int size, i;
   struct city *other_pcity = NULL;
 
   if (NULL == client.conn.playing) {
@@ -3222,7 +3215,7 @@ void city_dialog::prev_city()
 
   size = city_list_size(client.conn.playing->cities);
 
-  if (size == 1) {
+  if (size <= 1) {
     return;
   }
 
@@ -3232,9 +3225,11 @@ void city_dialog::prev_city()
     }
   }
 
-  for (j = 1; j < size; j++) {
-    other_pcity = city_list_get(client.conn.playing->cities,
-                                (i - j + size) % size);
+  if (i == 0 || i == size) {
+    // Current city in the beginning of the list or disappeared
+    other_pcity = city_list_get(client.conn.playing->cities, size - 1);
+  } else {
+    other_pcity = city_list_get(client.conn.playing->cities, i - 1);
   }
 
   center_tile_mapcanvas(other_pcity->tile);
@@ -3981,7 +3976,7 @@ void city_production_delegate::paint(QPainter *painter,
   QPixmap pix_dec(option.rect.width(), option.rect.height());
   QStyleOptionViewItem opt;
   color col;
-  QIcon icon = qapp->style()->standardIcon(QStyle::SP_DialogCancelButton);
+  QIcon icon = current_app()->style()->standardIcon(QStyle::SP_DialogCancelButton);
   bool free_sprite = false;
   struct unit_class *pclass;
 
@@ -4499,4 +4494,3 @@ production_widget::~production_widget()
   viewport()->removeEventFilter(fc_tt);
   removeEventFilter(this);
 }
-

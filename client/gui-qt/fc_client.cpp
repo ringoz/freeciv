@@ -107,7 +107,7 @@ fc_client::fc_client() : QMainWindow()
   game_tab_widget = NULL;
   start_players_tree = NULL;
   unit_sel = NULL;
-  info_tile_wdg = NULL;
+  info_tile_wdg = nullptr;
   opened_dialog = NULL;
   current_file = "";
   status_bar_queue.clear();
@@ -987,7 +987,7 @@ QIcon fc_icons::get_icon(const QString &id)
 /****************************************************************************
   Returns pixmap by given name, pixmap needs to be deleted by someone else
 ****************************************************************************/
-QPixmap* fc_icons::get_pixmap(const QString &id)
+QPixmap *fc_icons::get_pixmap(const QString &id)
 {
   QPixmap *pm;
   bool status;

@@ -59,7 +59,8 @@
 #define N_MSG_VIEW		 6
 #endif
 
-#define PTSIZE_LOG_FONT		adj_font(10)
+/* 0 -> use theme default */
+#define PTSIZE_LOG_FONT		0
 
 static struct ADVANCED_DLG *pMsg_Dlg = NULL;
 
@@ -253,8 +254,8 @@ void meswin_dialog_popup(bool raise)
 
   pMsg_Dlg = fc_calloc(1, sizeof(struct ADVANCED_DLG));
 
-  /* create window */
-  pstr = create_utf8_from_char(_("Messages"), adj_font(12));
+  /* Create window */
+  pstr = create_utf8_from_char_fonto(_("Messages"), FONTO_ATTENTION);
   pstr->style = TTF_STYLE_BOLD;
 
   pWindow = create_window_skeleton(NULL, pstr, 0);

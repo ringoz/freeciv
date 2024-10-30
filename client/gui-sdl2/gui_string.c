@@ -63,11 +63,20 @@ static TTF_Font *load_font(Uint16 ptsize);
 static SDL_Surface *create_utf8_surf(utf8_str *pstr);
 static SDL_Surface *create_utf8_multi_surf(utf8_str *pstr);
 
+/* Adjust font sizes on 320x240 screen */
+#ifdef SMALL_SCREEN
+  static int adj_font(int size);
+#else
+  #define adj_font(size) size
+#endif
+
+#define ptsize_default() adj_font(theme_default_font_size(theme))
+
 /**************************************************************************
   Adjust font sizes for small screen.
 **************************************************************************/
 #ifdef SMALL_SCREEN
-int adj_font(int size) {
+static int adj_font(int size) {
   switch(size) {
     case 24:
       return 12;
@@ -156,22 +165,58 @@ void utf8_str_size(utf8_str *pstr, SDL_Rect *fill)
 }
 
 /**************************************************************************
-  Create utf8_str struct with ptsize font.
+  Convert font_origin to ptsize value
+**************************************************************************/
+static Uint16 fonto_ptsize(enum font_origin origin)
+{
+  int def;
+
+  switch (origin) {
+  case FONTO_DEFAULT:
+    /* Rely on create_utf8_str() default */
+    return 0;
+  case FONTO_SLIGHTLY_BIGGER:
+    def = ptsize_default();
+    return adj_font(MAX(def + 0, def * 1.1)); /* Same as def, when def < 10 */
+  case FONTO_ATTENTION:
+    def = ptsize_default();
+    return adj_font(MAX(def + 1, def * 1.2));
+  case FONTO_ATTENTION_PLUS:
+    def = ptsize_default();
+    return adj_font(MAX(def + 1, def * 1.2)); /* Same as FONTO_ATTENTION, when def < 10 */
+  case FONTO_HEADING:
+    def = ptsize_default();
+    return adj_font(MAX(def + 2, def * 1.4));
+  case FONTO_BIG:
+    def = ptsize_default();
+    return adj_font(MAX(def + 3, def * 1.6));
+  case FONTO_MAX:
+    def = ptsize_default();
+    return adj_font(MAX(def + 7, def * 2.4));
+  }
+
+  return 0;
+}
+
+/**************************************************************************
+  Create utf8_str struct with ptsize font. If ptsize is zero,
+  use theme's default font size.
+
   Font will be loaded or aliased with existing font of that size.
-  in_text must be allocated in memory (malloc/fc_calloc)
+  in_text must be allocated in memory (malloc() / fc_calloc())
 **************************************************************************/
 utf8_str *create_utf8_str(char *in_text, size_t n_alloc, Uint16 ptsize)
 {
   utf8_str *str = fc_calloc(1, sizeof(utf8_str));
 
-  if (!ptsize) {
-    str->ptsize = theme_default_font_size(theme);
+  if (ptsize == 0) {
+    str->ptsize = ptsize_default();
   } else {
     str->ptsize = ptsize;
   }
 
   if ((str->font = load_font(str->ptsize)) == NULL) {
-    log_error("create_utf8_str(): load_font failed");
+    log_error("create_utf8_str(): load_font() failed");
     FC_FREE(str);
 
     return NULL;
@@ -182,11 +227,23 @@ utf8_str *create_utf8_str(char *in_text, size_t n_alloc, Uint16 ptsize)
   str->fgcol = *get_theme_color(COLOR_THEME_TEXT);
   str->render = 2;
 
-  /* in_text must be allocated in memory (malloc/fc_calloc) */
+  /* in_text must be allocated in memory (fc_malloc() / fc_calloc() ) */
   str->text = in_text;
   str->n_alloc = n_alloc;
 
   return str;
+}
+
+/**************************************************************************
+  Create utf8_str struct with font size from given origin.
+
+  Font will be loaded or aliased with existing font of that size.
+  in_text must be allocated in memory (fc_malloc() / fc_calloc())
+**************************************************************************/
+utf8_str *create_utf8_str_fonto(char *in_text, size_t n_alloc,
+                                enum font_origin origin)
+{
+  return create_utf8_str(in_text, n_alloc, fonto_ptsize(origin));
 }
 
 /**************************************************************************
@@ -303,7 +360,7 @@ static SDL_Surface *create_utf8_multi_surf(utf8_str *pstr)
     pstr->text = utf8_texts[i];
     tmp[i] = create_utf8_surf(pstr);
 
-    /* find max len */
+    /* Find max len */
     if (tmp[i]->w > w) {
       w = tmp[i]->w;
     }
@@ -311,9 +368,11 @@ static SDL_Surface *create_utf8_multi_surf(utf8_str *pstr)
 
   pstr->text = buf;
 
-  /* create and fill surface */
+  /* Create and fill surface */
 
-  SDL_GetColorKey(tmp[0], &color);
+  if (SDL_GetColorKey(tmp[0], &color) < 0) {
+    color = SDL_MapRGBA(tmp[0]->format, 0, 0, 0, 0);
+  }
 
   switch (pstr->render) {
   case 1:
@@ -332,7 +391,7 @@ static SDL_Surface *create_utf8_multi_surf(utf8_str *pstr)
     break;
   }
 
-  /* blit (default: center left) */
+  /* Blit (default: center left) */
   for (i = 0; i < count; i++) {
     if (pstr->style & SF_CENTER) {
       des.x = (w - tmp[i]->w) / 2;
@@ -502,6 +561,10 @@ void change_ptsize_utf8(utf8_str *pstr, Uint16 new_ptsize)
 {
   TTF_Font *buf;
 
+  if (new_ptsize == 0) {
+    new_ptsize = ptsize_default();
+  }
+
   if (pstr->ptsize == new_ptsize) {
     return;
   }
@@ -514,6 +577,14 @@ void change_ptsize_utf8(utf8_str *pstr, Uint16 new_ptsize)
   unload_font(pstr->ptsize);
   pstr->ptsize = new_ptsize;
   pstr->font = buf;
+}
+
+/**********************************************************************//**
+  Change font size of text to that from given origin.
+**************************************************************************/
+void change_fonto_utf8(utf8_str *pstr, enum font_origin origin)
+{
+  change_ptsize_utf8(pstr, fonto_ptsize(origin));
 }
 
 /* =================================================== */

@@ -67,14 +67,13 @@
 
 #include "mapview.h"
 
-extern SDL_Event *flush_event;
 extern SDL_Rect *pInfo_Area;
 
 int overview_start_x = 0;
 int overview_start_y = 0;
 
 static struct canvas *overview_canvas;
-static struct canvas *city_map_canvas;
+static struct canvas *city_map_canvas = NULL;
 static struct canvas *terrain_canvas;
 
 /* ================================================================ */
@@ -146,17 +145,17 @@ void unqueue_flush(void)
 
 /**************************************************************************
   Called when a region is marked dirty, this function queues a flush event
-  to be handled later by SDL.  The flush may end up being done
+  to be handled later by SDL. The flush may end up being done
   by freeciv before then, in which case it will be a wasted call.
 **************************************************************************/
 void queue_flush(void)
 {
   if (!is_flush_queued) {
-    if (SDL_PushEvent(flush_event) >= 0) {
+    if (flush_event()) {
       is_flush_queued = TRUE;
     } else {
       /* We don't want to set is_flush_queued in this case, since then
-       * the flush code would simply stop working.  But this means the
+       * the flush code would simply stop working. But this means the
        * below message may be repeated many times. */
       log_error(_("Failed to add events to SDL2 event buffer: %s"),
                 SDL_GetError());
@@ -395,7 +394,7 @@ void overview_size_changed(void)
 
 /**************************************************************************
   Typically an info box is provided to tell the player about the state
-  of their civilization.  This function is called when the label is
+  of their civilization. This function is called when the label is
   changed.
 **************************************************************************/
 void update_info_label(void)
@@ -414,13 +413,9 @@ void update_info_label(void)
     return;
   }
 
-#ifdef SMALL_SCREEN
-  ptext = create_utf8_str(NULL, 0, 8);
-#else
-  ptext = create_utf8_str(NULL, 0, 10);
-#endif
+  ptext = create_utf8_str_fonto(NULL, 0, FONTO_DEFAULT);
 
-  /* set text settings */
+  /* Set text settings */
   ptext->style |= TTF_STYLE_BOLD;
   ptext->fgcol = *get_theme_color(COLOR_THEME_MAPVIEW_INFO_TEXT);
   ptext->bgcol = (SDL_Color) {0, 0, 0, 0};
@@ -446,7 +441,8 @@ void update_info_label(void)
                 client.conn.playing->economic.luxury,
                 client.conn.playing->economic.science);
 #endif /* SMALL_SCREEN */
-    /* convert to unistr and create text surface */
+
+    /* Convert to unistr and create text surface */
     copy_chars_to_utf8_str(ptext, buffer);
     pTmp = create_text_surf_from_utf8(ptext);
 
@@ -454,26 +450,30 @@ void update_info_label(void)
     area.w = pTmp->w + adj_size(8);
     area.h = pTmp->h + adj_size(4);
 
-    SDL_FillRect(Main.gui->surface, &area , map_rgba(Main.gui->surface->format, bg_color));
+    SDL_FillRect(Main.gui->surface, &area,
+                 map_rgba(Main.gui->surface->format, bg_color));
 
     /* Horizontal lines */
     create_line(Main.gui->surface,
                 area.x + 1, area.y, area.x + area.w - 2, area.y,
                 get_theme_color(COLOR_THEME_MAPVIEW_INFO_FRAME));
     create_line(Main.gui->surface,
-                area.x + 1, area.y + area.h - 1, area.x + area.w - 2, area.y + area.h - 1,
+                area.x + 1, area.y + area.h - 1,
+                area.x + area.w - 2, area.y + area.h - 1,
                 get_theme_color(COLOR_THEME_MAPVIEW_INFO_FRAME));
 
-    /* vertical lines */
+    /* Vertical lines */
     create_line(Main.gui->surface,
-                area.x + area.w - 1, area.y + 1, area.x + area.w - 1, area.y + area.h - 2,
+                area.x + area.w - 1, area.y + 1,
+                area.x + area.w - 1, area.y + area.h - 2,
                 get_theme_color(COLOR_THEME_MAPVIEW_INFO_FRAME));
     create_line(Main.gui->surface,
                 area.x, area.y + 1, area.x, area.y + area.h - 2,
                 get_theme_color(COLOR_THEME_MAPVIEW_INFO_FRAME));
 
-    /* blit text to screen */
-    blit_entire_src(pTmp, Main.gui->surface, area.x + adj_size(5), area.y + adj_size(2));
+    /* Blit text to screen */
+    blit_entire_src(pTmp, Main.gui->surface,
+                    area.x + adj_size(5), area.y + adj_size(2));
 
     dirty_sdl_rect(&area);
 
@@ -532,7 +532,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
   if (SDL_Client_Flags & CF_UNITINFO_SHOWN) {
     pInfo_Window = get_unit_info_window_widget();
 
-    /* blit theme surface */
+    /* Blit theme surface */
     widget_redraw(pInfo_Window);
 
     if (pUnit) {
@@ -543,8 +543,9 @@ void redraw_unit_info_label(struct unit_list *punitlist)
       struct tile *pTile = unit_tile(pUnit);
       const char *vetname;
 
-      /* get and draw unit name (with veteran status) */
-      pstr = create_utf8_from_char(unit_name_translation(pUnit), adj_font(12));
+      /* Get and draw unit name (with veteran status) */
+      pstr = create_utf8_from_char_fonto(unit_name_translation(pUnit),
+                                         FONTO_ATTENTION);
       pstr->style |= TTF_STYLE_BOLD;
       pstr->bgcol = (SDL_Color) {0, 0, 0, 0};
       pName = create_text_surf_from_utf8(pstr);
@@ -560,7 +561,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
         right = FALSE;
       }
 
-      change_ptsize_utf8(pstr, adj_font(10));
+      change_fonto_utf8(pstr, FONTO_DEFAULT);
       vetname = utype_veteran_name_translation(unit_type_get(pUnit),
                                                pUnit->veteran);
       if (vetname != NULL) {
@@ -570,7 +571,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
         pstr->fgcol = *get_theme_color(COLOR_THEME_MAPVIEW_UNITINFO_TEXT);
       }
 
-      /* get and draw other info (MP, terrain, city, etc.) */
+      /* Get and draw other info (MP, terrain, city, etc.) */
       pstr->style |= SF_CENTER;
 
       copy_chars_to_utf8_str(pstr,
@@ -801,6 +802,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
 
         unit_list_iterate(pTile->units, aunit) {
           SDL_Surface *tmp_surf;
+          struct astring addition = ASTRING_INIT;
 
           if (aunit == pUnit) {
             continue;
@@ -809,6 +811,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
           pUType = unit_type_get(aunit);
           vetname = utype_veteran_name_translation(pUType, aunit->veteran);
           pHome_City = game_city_by_number(aunit->homecity);
+          unit_activity_astr(aunit, &addition);
           fc_snprintf(buffer, sizeof(buffer), "%s (%d,%d,%s)%s%s\n%s\n(%d/%d)\n%s",
                       utype_name_translation(pUType),
                       pUType->attack_strength,
@@ -816,9 +819,10 @@ void redraw_unit_info_label(struct unit_list *punitlist)
                       move_points_text(pUType->move_rate, FALSE),
                       (vetname != NULL ? "\n" : ""),
                       (vetname != NULL ? vetname : ""),
-                      unit_activity_text(aunit),
+                      astr_str(&addition),
                       aunit->hp, pUType->hp,
                       pHome_City ? city_name_get(pHome_City) : Q_("?homecity:None"));
+          astr_free(&addition);
 
           buf_surf = create_surf(tileset_full_tile_width(tileset),
                                  tileset_full_tile_height(tileset), SDL_SWSURFACE);
@@ -937,7 +941,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
 
         fc_snprintf(buf, sizeof(buf), "%s\n%s\n%s",
                     _("End of Turn"), _("Press"), _("Shift+Return"));
-        pstr = create_utf8_from_char(buf, adj_font(14));
+        pstr = create_utf8_from_char_fonto(buf, FONTO_HEADING);
         pstr->style = SF_CENTER;
         pstr->bgcol = (SDL_Color) {0, 0, 0, 0};
         buf_surf = create_text_surf_from_utf8(pstr);
@@ -947,7 +951,7 @@ void redraw_unit_info_label(struct unit_list *punitlist)
         alphablit(buf_surf, NULL, pInfo_Window->dst->surface, &area, 255);
         FREESURFACE(buf_surf);
         FREEUTF8STR(pstr);
-        /* fix the bug of child dialogues not showing up when player's turn ends */
+        /* Fix the bug of child dialogues not showing up when player's turn ends */
         flush_all();
       }
     }
@@ -1172,20 +1176,28 @@ void tileset_changed(void)
    ===================================================================== */
 
 /**************************************************************************
+  Free memory allocated for the city map canvas
+**************************************************************************/
+void city_map_canvas_free(void)
+{
+  if (city_map_canvas != NULL) {
+    canvas_free(city_map_canvas);
+    city_map_canvas = NULL;
+  }
+}
+
+/**************************************************************************
   Create new city map surface.
 **************************************************************************/
 SDL_Surface *create_city_map(struct city *pcity)
 {
-  /* city map dimensions might have changed, so create a new canvas each time */
+  /* City map dimensions might have changed, so create a new canvas each time */
+  city_map_canvas_free();
 
-  if (city_map_canvas) {
-    canvas_free(city_map_canvas);
-  }
-
-  city_map_canvas = canvas_create(get_citydlg_canvas_width(), 
+  city_map_canvas = canvas_create(get_citydlg_canvas_width(),
                                   get_citydlg_canvas_height());
 
-  city_dialog_redraw_map(pcity, city_map_canvas);  
+  city_dialog_redraw_map(pcity, city_map_canvas);
 
   return city_map_canvas->surf;
 }

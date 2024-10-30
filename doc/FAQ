@@ -1,6 +1,6 @@
                   Freeciv Frequently Asked Questions (FAQ)
 
-                 (from http://www.freeciv.org/wiki/FAQ)
+                (from https://www.freeciv.org/wiki/FAQ_2.6)
 
    Contents
 
@@ -497,8 +497,8 @@ I cannot conquer it, and they won't give up. What can I do?
 
    Now, you're ready to assign players to teams. To do this you use the
    team command. For example, if there's one human player and you want two
-   more AI players on the same team, you can do to create two AI players
-   and put them on the same team you can do
+   more AI players on the same team, to create two AI players and put them
+   on the same team you can do
 /set aifill 2
 /team AI*2 1
 /team AI*3 1
@@ -567,8 +567,8 @@ I cannot conquer it, and they won't give up. What can I do?
 
    We're open to suggestions on this one.
 
-   You can try to give Freeciv to your boss. There is no guarantee, but he
-   may wake up later than you. Remind yourself that if you run into him at
+   You can try to give Freeciv to your boss. There is no guarantee, but they
+   may wake up later than you. Remind yourself that if you run into them at
    Civilization Anonymous, it's time to change jobs.
 
 -------
@@ -660,8 +660,11 @@ Starting game.
 
 3.5 Am I using the latest version? Do I need to upgrade?
 
-   The current stable Freeciv version is 2.6.6. For an overview of
-   changes that went into this release, see the NEWS-2.6.6 article.
+   The current stable Freeciv-2.6 version is 2.6.11. For an overview of
+   changes that went into this release, see the NEWS-2.6.11 article.
+
+   The current stable Freeciv-3.0 version is 3.0.5. For an overview of
+   changes that went into this release, see the NEWS-3.0.5 article.
 
    The NEWS-#.#.# article is only updated for a new release; updates to
    Git can be reviewed in the online source code browser.
@@ -673,14 +676,14 @@ Starting game.
    version and the client type (GTK2, GTK3, QT, SDL2, …).
 
    It's possible that not all precompiled binaries and ports have been
-   updated to 2.6.6 yet. If you can contribute, please do! Prepare a
+   updated to 2.6.11 yet. If you can contribute, please do! Prepare a
    package and announce it to freeciv-dev@freelists.org.
 
    Clients and servers of different major versions are generally
    incompatible due to changes in the client/server protocol. You will see
    incompatibilities as a 'mismatched capabilities' error. Different minor
    versions should be compatible, however. For example, 2.5.4 and 2.5.0
-   are compatible; 2.5.4 and 2.6.6 are not.
+   are compatible; 2.5.4 and 2.6.9 are not.
 
 -------
 
@@ -960,8 +963,8 @@ or add cities to the list for an existing nation?
 
    If you used one of the self installer versions then there's a program
    group with the name chosen at installation time (for example,
-   Freeciv 2.6.6 (GTK+3 client).) Just go to click on
-   Start→Programs→Freeciv 2.6.6 (GTK+3 client)→Freeciv
+   Freeciv 2.6.11 (GTK+3 client).) Just go to click on
+   Start→Programs→Freeciv 2.6.11 (GTK+3 client)→Freeciv
 
    That's it! You should be up and running.
 
