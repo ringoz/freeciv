@@ -754,4 +754,3 @@ const char *osGetLocale(void);
 #define DIR_SEPARATOR "/"
 #define DIR_SEPARATOR_CHAR '/'
 #include "nanociv.h"
-#define _DARWIN_C_SOURCE
