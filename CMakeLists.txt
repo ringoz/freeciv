@@ -4,6 +4,8 @@
 
 add_subdirectory(dependencies)
 
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
 function(gen_tolua dir nam)
   add_custom_command(
       COMMAND fc_tolua -n ${nam} -o ${dir}/tolua_${nam}_gen.c -H ${dir}/tolua_${nam}_gen.h ${dir}/tolua_${nam}.pkg
@@ -25,7 +27,7 @@ endif()
 
 add_custom_command(
   COMMAND
-    ${PYTHON_EXECUTABLE} common/generate_packets.py
+    ${Python3_INTERPRETER} common/generate_packets.py
   OUTPUT
     ${CMAKE_CURRENT_SOURCE_DIR}/common/packets_gen.c 
     ${CMAKE_CURRENT_SOURCE_DIR}/common/packets_gen.h
@@ -42,7 +44,7 @@ add_custom_command(
 
 add_custom_command(
   COMMAND
-    ${PYTHON_EXECUTABLE} utility/generate_specenum.py
+    ${Python3_INTERPRETER} utility/generate_specenum.py
   OUTPUT
     ${CMAKE_CURRENT_SOURCE_DIR}/utility/specenum_gen.h
   DEPENDS
