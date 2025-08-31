@@ -66,6 +66,7 @@ set(FC_COMPILE_OPTIONS
     -Wno-macro-redefined 
     -Wno-unused-function 
     -Wno-c++11-narrowing
+    -Wno-gnu-folding-constant
   )
 
 add_library(fc_common STATIC)
